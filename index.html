@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihongo Trinity | System Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="nav-pages">
+        <button class="sidebar-toggle" type="button" aria-label="Buka menu tambahan" aria-expanded="false">☰</button>
+        <div class="logo">Nihongo Trinity</div>
+        <div class="menu">
+            <a href="index.html" class="active-cyan">Dashboard</a>
+            <a href="pages/belajar.html">Hiragana</a>
+            <a href="pages/belajar-katakana.html">Katakana</a>
+            <a href="pages/kuis.html">Training</a>
+        </div>
+    </nav>
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+    <aside class="sidebar" aria-hidden="true">
+        <div class="sidebar-head"><span class="section-label">TRINITY MENU</span><button class="sidebar-close" type="button" aria-label="Tutup menu">×</button></div>
+        <p class="sidebar-greeting">Jelajahi ruang<br><strong>belajar & komunitas.</strong></p>
+        <nav class="sidebar-links" aria-label="Menu tambahan">
+            <a href="index.html" class="sidebar-link active"><span>⌂</span>Home</a>
+            <a href="pages/jadwal.html" class="sidebar-link"><span>◷</span>Jadwal</a>
+            <a href="pages/info.html" class="sidebar-link"><span>ⓘ</span>Info</a>
+            <a href="pages/grup.html" class="sidebar-link"><span>♧</span>Grup</a>
+            <a href="pages/donasi.html" class="sidebar-link"><span>♡</span>Donasi</a>
+            <a href="pages/hiburan.html" class="sidebar-link"><span>✦</span>Hiburan</a>
+        </nav>
+        <div class="sidebar-note"><span class="status-dot"></span> Sistem aktif<br><small>Siap menemani sesi belajarmu.</small></div>
+    </aside>
+
+    <!-- Bagian Utama: Pusat Kontrol -->
+    <header class="hub-header">
+        <p class="eyebrow">// learning command center · v2.0</p>
+        <h1>Bangun fondasi Jepangmu, satu kana setiap hari.</h1>
+        <p class="subtitle">Ruang belajar ringkas untuk menguasai Hiragana, Katakana, dan refleks membaca dengan ritme yang konsisten.</p>
+        
+        <div class="action-buttons">
+            <a href="pages/belajar.html" class="btn btn-cyan">Mulai Hiragana →</a>
+            <a href="pages/belajar-katakana.html" class="btn btn-pink">Eksplor Katakana →</a>
+            <a href="pages/kuis.html" class="btn btn-outline">Uji refleks →</a>
+        </div>
+    </header>
+
+    <!-- Layout Dashboard (Team di kiri, Ranking di kanan) -->
+    <div class="dashboard-wrapper">
+        
+        <!-- Bagian Team Roster dengan Penjelasan -->
+        <section class="team-main">
+            <h2>Team Roster</h2>
+            <div class="card-container">
+                
+                <!-- Profil Umaedi -->
+                <div class="card owner-card">
+                    <span class="badge">OWNER / FOUNDER</span>
+                    <h3>Umaedi</h3>
+                    <p class="role">IT & Technology Specialist</p>
+                    <p class="desc">Keahlian utama di bidang Ilmu Teknologi, pemrograman, dan pengembangan sistem. Bertanggung jawab penuh atas infrastruktur dan sistem keamanan web Nihongo Trinity.</p>
+                </div>
+
+                <!-- Profil Iqbal -->
+                <div class="card">
+                    <h3>Iqbal</h3>
+                    <p class="role">Japanese Sensei</p>
+                    <p class="desc"><em>"Rapid language acquisition & Advanced linguistic comprehension."</em> Sang master bahasa Jepang di dalam tim yang menguasai tata bahasa dan kosa kata tingkat lanjut.</p>
+                </div>
+
+                <!-- Profil Rifki -->
+                <div class="card">
+                    <h3>Rifki / Swing</h3>
+                    <p class="role">History, Politics & Religion Expert</p>
+                    <p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama. Memberikan perspektif luas dan bijaksana dalam setiap diskusi tim.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Bagian Ranking (Di samping, ukuran lebih kecil & ada foto) -->
+        <aside class="leaderboard-panel">
+            <h2>Ranking</h2>
+            <ol class="rank-list">
+                
+                <!-- Rank 1: Iqbal -->
+                <li class="rank-1">
+                    <div class="rank-pic">
+                        <img src="https://via.placeholder.com/50" alt="Foto Iqbal">
+                    </div>
+                    <div class="rank-info">
+                        <strong>Iqbal</strong>
+                        <p>👑 Level: Sensei</p>
+                    </div>
+                </li>
+
+                <!-- Rank 2: Umaedi -->
+                <li class="rank-2">
+                    <div class="rank-pic">
+                        <img src="https://via.placeholder.com/50" alt="Foto Umaedi">
+                    </div>
+                    <div class="rank-info">
+                        <strong>Umaedi</strong>
+                        <p>💻 Level: Senpai</p>
+                    </div>
+                </li>
+
+                <!-- Rank 3: Rifki -->
+                <li class="rank-3">
+                    <div class="rank-pic">
+                        <img src="https://via.placeholder.com/50" alt="Foto Rifki">
+                    </div>
+                    <div class="rank-info">
+                        <strong>Rifki (Swing)</strong>
+                        <p>📜 Level: Kouhai</p>
+                    </div>
+                </li>
+
+            </ol>
+        </aside>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
