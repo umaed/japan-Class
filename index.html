@@ -75,6 +75,13 @@
                     <p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama. Memberikan perspektif luas dan bijaksana dalam setiap diskusi tim.</p>
                 </div>
 
+                <!-- Profil Fasya -->
+                <div class="card">
+                    <h3>Fasya</h3>
+                    <p class="role">Kana Learner</p>
+                    <p class="desc">Member tim yang aktif berlatih kana dan ikut menjaga suasana belajar tetap seru dan konsisten.</p>
+                </div>
+
             </div>
         </section>
 
@@ -116,10 +123,56 @@
                     </div>
                 </li>
 
+                <!-- Rank 4: Fasya -->
+                <li class="rank-4">
+                    <div class="rank-pic">
+                        <img src="https://via.placeholder.com/50" alt="Foto Fasya">
+                    </div>
+                    <div class="rank-info">
+                        <strong>Fasya</strong>
+                        <p>🌱 Level: Novice</p>
+                    </div>
+                </li>
+
             </ol>
         </aside>
 
     </div>
+    <!-- Fitur Chat Komunikasi Tim -->
+<aside class="chat-panel">
+    <h2>Comms Link</h2>
+    
+    <div id="loginPanel" class="chat-login">
+        <p class="chat-login-title">Masuk ke akunmu</p>
+        <select id="loginUser" class="user-select" aria-label="Pilih akun">
+            <option value="">Pilih akun</option>
+            <option value="Umaedi">Umaedi</option>
+            <option value="Iqbal">Iqbal</option>
+            <option value="Rifki">Rifki (Swing)</option>
+            <option value="Fasya">Fasya</option>
+        </select>
+        <input type="password" id="loginCode" class="login-code" placeholder="Kode rahasia" autocomplete="current-password">
+        <button id="loginBtn" type="button">MASUK</button>
+        <p id="loginError" class="login-error" role="alert"></p>
+    </div>
+
+    <div id="accountBar" class="account-bar" hidden>
+        <span>Masuk sebagai <strong id="currentUserLabel"></strong></span>
+        <button id="logoutBtn" type="button">KELUAR</button>
+    </div>
+
+    <!-- Kotak Pesan -->
+    <div class="chat-box" id="chatBox">
+        <!-- Pesan akan muncul di sini -->
+    </div>
+
+    <!-- Area Ketik Pesan -->
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Ketik transmisi..." disabled>
+        <button id="sendBtn" type="button" disabled>KIRIM</button>
+    </div>
+</aside>
     <script src="script.js"></script>
+    <script type="module" src="chat.js"></script>
 </body>
 </html>
