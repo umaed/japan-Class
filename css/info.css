@@ -1,0 +1,124 @@
+/* =========================================
+   Info Page - Zen/Corporate Theme
+   ========================================= */
+.info-page { max-width: 800px; margin: 0 auto; padding: 40px 20px 100px; }
+.info-page .page-title { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); margin: 12px 0 8px; font-weight: 700; font-family: 'Noto Serif JP', serif; }
+.info-page .subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 40px; font-weight: 300; }
+
+/* Kartu Tombol Profil */
+.developer-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px 25px;
+    text-align: left;
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.developer-profile::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--japan-gold);
+    transition: 0.3s ease;
+}
+
+.developer-profile:hover {
+    transform: translateY(-3px);
+    border-color: var(--japan-gold);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.developer-profile:hover::before {
+    background: var(--japan-red);
+}
+
+/* Avatar Inisial */
+.developer-avatar {
+    display: grid;
+    place-items: center;
+    width: 55px;
+    height: 55px;
+    flex: 0 0 55px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--japan-gold);
+    border: 1px solid var(--japan-gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 24px;
+    font-weight: 700;
+    transition: 0.3s ease;
+}
+
+.developer-profile:hover .developer-avatar {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+/* Detail Teks */
+.developer-details { flex: 1; min-width: 0; }
+.developer-name-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 5px; }
+.developer-name-row h2 { margin: 0; color: #fff; font-size: 1.4rem; font-family: 'Noto Serif JP', serif; }
+.section-label { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+/* Status Aktif dengan Animasi Berdenyut */
+.active-status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 20px; color: #4CAF50; background: rgba(76, 175, 80, 0.1); font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+.active-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; box-shadow: 0 0 8px #4CAF50; animation: pulse-green 2s infinite; }
+@keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+/* Teks Bantuan */
+.profile-hint { color: var(--japan-red); font-size: 11px; font-weight: 500; letter-spacing: 1px; display: inline-block; margin-top: 5px; transition: 0.3s; }
+.developer-profile:hover .profile-hint { color: var(--japan-gold); }
+
+/* Kotak Pesan yang Terbuka */
+.info-message {
+    margin-top: 15px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(211, 47, 47, 0.05), rgba(19, 25, 33, 0.8));
+    border-left: 3px solid var(--japan-red);
+    border-radius: 0 8px 8px 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.info-message.is-hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    border-width: 0;
+}
+
+.info-message p {
+    margin: 10px 0 0 0;
+    color: var(--text-main);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    font-style: italic;
+    font-family: 'Noto Serif JP', serif;
+}
+
+/* Responsif untuk Layar HP */
+@media (max-width: 600px) {
+    .info-page { padding: 30px 15px 110px; }
+    .developer-profile { padding: 15px; flex-direction: column; align-items: flex-start; gap: 15px; text-align: left; }
+    .developer-avatar { width: 45px; height: 45px; font-size: 20px; }
+    .developer-name-row { flex-direction: column; align-items: flex-start; width: 100%; }
+    .active-status { margin-top: 5px; align-self: flex-start; }
+}

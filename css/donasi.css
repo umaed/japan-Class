@@ -1,0 +1,4 @@
+/* Penyempurnaan halaman donasi. */
+.page-content .donation-card { border-color:rgba(255,146,120,.35); box-shadow:0 16px 36px rgba(0,0,0,.2); }
+.page-content .donation-card h3 { color:var(--neon-pink); }
+@media (max-width:600px) { .page-content { padding:42px 14px; }.page-content .donation-card { margin-top:20px; } }

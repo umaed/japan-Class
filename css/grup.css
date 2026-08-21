@@ -1,0 +1,4 @@
+/* Gaya khusus halaman grup. */
+.page-content .card-container { justify-content:flex-start; }
+.page-content .card { flex:1 1 220px; }
+@media (max-width:600px) { .page-content .card { width:100%; } }

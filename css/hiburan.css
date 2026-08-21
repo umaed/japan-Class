@@ -1,0 +1,113 @@
+/* =========================================
+   Hiburan Page - Zen/Corporate Theme
+   ========================================= */
+.hiburan-page { max-width: 1000px; margin: 0 auto; padding: 40px 20px 100px; }
+.hiburan-page .page-title { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); margin: 12px 0 8px; font-weight: 700; font-family: 'Noto Serif JP', serif; }
+.hiburan-page .subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 40px; font-weight: 300; max-width: 600px; }
+
+/* Grid Kartu Hiburan */
+.entertainment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* Desain Kartu */
+.ent-card {
+    background: var(--card-bg);
+    padding: 35px 25px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.ent-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: var(--japan-red);
+    transition: width 0.4s ease;
+}
+
+.ent-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.ent-card:hover::before { width: 100%; }
+
+/* Ikon di dalam kartu */
+.ent-icon {
+    font-size: 32px;
+    width: 70px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.ent-card:hover .ent-icon {
+    background: rgba(211, 47, 47, 0.1);
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.ent-card h3 { color: #fff; font-size: 1.3rem; margin: 0 0 15px 0; font-family: 'Noto Serif JP', serif; }
+.ent-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin: 0 0 25px 0; flex-grow: 1; font-weight: 300; }
+.ent-card .btn { width: 100%; margin: 0; }
+
+/* Highlight Khusus Kartu Oshi */
+.highlight-card { border-color: rgba(212, 175, 55, 0.3); }
+.highlight-card::before { background: var(--japan-gold); }
+.highlight-card:hover .ent-icon { background: rgba(212, 175, 55, 0.1); border-color: var(--japan-gold); }
+
+/* Tombol Kembali */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    padding: 8px 15px;
+    background: rgba(19, 25, 33, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+.back-btn:hover .back-icon { transform: translateX(-4px); }
+.back-btn .back-icon { font-size: 16px; transition: transform 0.3s ease; }
+
+/* Responsif HP */
+@media (max-width: 600px) {
+    .hiburan-page { padding: 30px 15px 110px; }
+    .entertainment-grid { grid-template-columns: 1fr; gap: 20px; }
+}
