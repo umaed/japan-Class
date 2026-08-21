@@ -30,37 +30,6 @@ let currentStreak = 0;
 let bestScore = Number(localStorage.getItem("nihongoBestScore") || 0);
 let currentQuestion = {};
 
-function setupSidebar() {
-    const sidebar = document.querySelector(".sidebar");
-    const toggle = document.querySelector(".sidebar-toggle");
-    const closeButton = document.querySelector(".sidebar-close");
-    const backdrop = document.querySelector(".sidebar-backdrop");
-    if (!sidebar || !toggle || !closeButton || !backdrop) return;
-
-    function setSidebarState(isOpen) {
-        sidebar.classList.toggle("is-open", isOpen);
-        backdrop.classList.toggle("is-visible", isOpen);
-        document.body.classList.toggle("sidebar-active", isOpen);
-        toggle.setAttribute("aria-expanded", String(isOpen));
-        sidebar.setAttribute("aria-hidden", String(!isOpen));
-    }
-
-    toggle.addEventListener("click", () => setSidebarState(true));
-    closeButton.addEventListener("click", () => setSidebarState(false));
-    backdrop.addEventListener("click", () => setSidebarState(false));
-    document.addEventListener("keydown", event => {
-        if (event.key === "Escape") setSidebarState(false);
-    });
-
-    sidebar.querySelectorAll(".sidebar-link").forEach(link => {
-        link.addEventListener("click", () => {
-            sidebar.querySelectorAll(".sidebar-link").forEach(item => item.classList.remove("active"));
-            link.classList.add("active");
-            setSidebarState(false);
-        });
-    });
-}
-
 function setupInfoProfile() {
     const profile = document.getElementById("developerProfile");
     const message = document.getElementById("developerMessage");
@@ -182,7 +151,6 @@ function checkAnswer() {
 
 // Menjalankan kuis saat halaman dimuat
 window.onload = function() {
-    setupSidebar();
     setupInfoProfile();
     setupStudyPage();
     if(document.getElementById("questionKana")) {
@@ -195,5 +163,58 @@ window.onload = function() {
 document.getElementById("answerInput")?.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         checkAnswer();
+    }
+});
+
+// ==========================================
+// LOGIKA LOGIN GLOBAL DI HALAMAN INDEX
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const globalLoginOverlay = document.getElementById("globalLoginOverlay");
+    
+    // Hanya jalankan jika elemen overlay ada (artinya sedang di halaman index)
+    if (globalLoginOverlay) {
+        const mainLoginUser = document.getElementById("mainLoginUser");
+        const mainLoginCode = document.getElementById("mainLoginCode");
+        const mainLoginBtn = document.getElementById("mainLoginBtn");
+        const mainLoginError = document.getElementById("mainLoginError");
+
+        const accountCodes = {
+            Umaedi: "UMAEDI2026",
+            Iqbal: "IQBAL2026",
+            Rifki: "RIFKI2026",
+            Fasya: "FASYA2026"
+        };
+
+        // Cek status sesi saat halaman dimuat
+        if (sessionStorage.getItem("nihongoChatUser")) {
+            globalLoginOverlay.style.display = "none"; // Sudah login, sembunyikan pop-up
+        } else {
+            globalLoginOverlay.style.display = "flex"; // Belum login, halangi dengan pop-up
+        }
+
+        // Fungsi saat tombol Masuk diklik
+        function handleMainLogin() {
+            const user = mainLoginUser.value;
+            const code = mainLoginCode.value.trim().toUpperCase();
+            
+            if (!user) {
+                mainLoginError.textContent = "Pilih akun terlebih dahulu.";
+                return;
+            }
+
+            if (accountCodes[user] === code) {
+                // Login Sukses! Simpan di memori sementara browser
+                sessionStorage.setItem("nihongoChatUser", user);
+                globalLoginOverlay.style.display = "none"; // Buka gembok halaman
+            } else {
+                mainLoginError.textContent = "Akun atau kode rahasia salah.";
+            }
+        }
+
+        mainLoginBtn.addEventListener("click", handleMainLogin);
+        mainLoginCode.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") handleMainLogin();
+        });
     }
 });
