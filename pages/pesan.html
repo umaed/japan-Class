@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta tag ini yang berfungsi MENGUNCI layar agar tidak bisa di-zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Ruang Obrolan | Trinity</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/pesan.css">
+    <script>if (!sessionStorage.getItem("nihongoChatUser")) window.location.replace("../index.html");</script>
+</head>
+<body class="message-page">
+    
+    <!-- Navbar atas sudah dihapus agar layar chat tampil penuh -->
+
+    <main class="message-layout">
+        <section class="chat-panel group-chat" aria-label="Chat grup">
+            <header class="chat-header">
+                <div class="chat-group-avatar">♧</div>
+                <div>
+                    <p class="section-label">TRINITY COMMUNITY</p>
+                    <h1>Ruang Obrolan</h1>
+                    <span><i class="online-dot"></i> 4 member aktif</span>
+                </div>
+                <!-- Tombol silang (X) untuk kembali ke Dashboard -->
+                <a href="../index.html" class="chat-back" aria-label="Kembali ke dashboard">×</a>
+            </header>
+            
+            <div class="group-members" aria-label="Member grup">
+                <span class="member-avatar avatar-umaedi">U</span>
+                <span class="member-avatar avatar-iqbal">I</span>
+                <span class="member-avatar avatar-rifki">R</span>
+                <span class="member-avatar avatar-fasya">F</span>
+                <span class="member-count">Umaedi, Iqbal, Rifki, Fasya</span>
+            </div>
+            
+            <div class="chat-box" id="chatBox">
+                <div class="chat-day">HARI INI</div>
+            </div>
+            
+            <div class="chat-input-area">
+                <button class="chat-emoji" type="button" aria-label="Pilih emoji">☺</button>
+                <input type="text" id="chatInput" placeholder="Tulis pesan ke grup..." disabled>
+                <button id="sendBtn" type="button" disabled aria-label="Kirim pesan">➤</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../script.js"></script>
+    <script type="module" src="../chat.js"></script>
+</body>
+</html>

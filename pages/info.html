@@ -1,63 +1,46 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Nihongo Trinity | Info</title>
-	<link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihongo Trinity | Info</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/info.css">
 </head>
-<body>
-	<nav class="nav-pages">
-		<button class="sidebar-toggle" type="button" aria-label="Buka menu tambahan" aria-expanded="false">☰</button>
-		<a class="logo" href="../index.html">Nihongo Trinity</a>
-		<div class="menu">
-			<a href="../index.html">Dashboard</a>
-			<a href="belajar.html">Hiragana</a>
-			<a href="belajar-katakana.html">Katakana</a>
-			<a href="kuis.html">Training</a>
-		</div>
-	</nav>
+<body class="main-page">
+    
+    <section class="content page-content info-page">
+        <!-- Tombol Kembali -->
+        <a href="../index.html" class="back-btn">
+            <span class="back-icon">←</span> Dashboard
+        </a>
 
-	<div class="sidebar-backdrop" data-sidebar-close></div>
-	<aside class="sidebar" aria-hidden="true">
-		<div class="sidebar-head"><span class="section-label">TRINITY MENU</span><button class="sidebar-close" type="button" aria-label="Tutup menu">×</button></div>
-		<p class="sidebar-greeting">Jelajahi ruang<br><strong>belajar & komunitas.</strong></p>
-		<nav class="sidebar-links" aria-label="Menu tambahan">
-			<a href="../index.html" class="sidebar-link"><span>⌂</span>Home</a>
-			<a href="jadwal.html" class="sidebar-link"><span>◷</span>Jadwal</a>
-			<a href="info.html" class="sidebar-link active"><span>ⓘ</span>Info</a>
-			<a href="grup.html" class="sidebar-link"><span>♧</span>Grup</a>
-			<a href="donasi.html" class="sidebar-link"><span>♡</span>Donasi</a>
-			<a href="hiburan.html" class="sidebar-link"><span>✦</span>Hiburan</a>
-		</nav>
-		<div class="sidebar-note"><span class="status-dot"></span> Sistem aktif<br><small>Siap menemani sesi belajarmu.</small></div>
-	</aside>
+        <p class="eyebrow">【 開発者情報 · Developer Info 】</p>
+        <h1 class="page-title">Info Sistem & Pengembang</h1>
+        <p class="subtitle">Kenali pengembang dan filosofi di balik hadirnya Nihongo Trinity sebagai ruang belajar kana yang terstruktur.</p>
 
-	<main class="content page-content info-page">
-		<p class="eyebrow">TRINITY / DEVELOPER INFO</p>
-		<h1>Info sistem & pengembang.</h1>
-		<p class="subtitle">Kenali pengembang dan alasan di balik hadirnya Nihongo Trinity sebagai ruang belajar kana yang ringan.</p>
+        <!-- Kartu Profil Developer -->
+        <button class="developer-profile" id="developerProfile" type="button" aria-expanded="false" aria-controls="developerMessage">
+            <div class="developer-avatar" aria-hidden="true">U</div>
+            <div class="developer-details">
+                <div class="developer-name-row">
+                    <div>
+                        <span class="section-label">Pembuat Sistem</span>
+                        <h2>Umaedi</h2>
+                    </div>
+                    <span class="active-status"><span class="active-dot"></span> AKTIF</span>
+                </div>
+                <span class="profile-hint">Klik untuk membaca pesan <span aria-hidden="true">↗</span></span>
+            </div>
+        </button>
 
-		<button class="developer-profile" id="developerProfile" type="button" aria-expanded="false" aria-controls="developerMessage">
-			<div class="developer-avatar" aria-hidden="true">U</div>
-			<div class="developer-details">
-				<div class="developer-name-row">
-					<div>
-						<span class="section-label">DEVELOPER PROFILE</span>
-						<h2>Umaedi</h2>
-					</div>
-					<span class="active-status"><span class="active-dot"></span> AKTIF</span>
-				</div>
-				<span class="profile-hint">Klik untuk membuka pesan <span aria-hidden="true">↗</span></span>
-			</div>
-		</button>
+        <!-- Pesan Tersembunyi -->
+        <section class="info-message is-hidden" id="developerMessage" aria-hidden="true">
+            <span class="section-label">Pesan dari Developer</span>
+            <p>“Untuk sekarang pokoknya belajar bahasa Jepangnya cukup mudah. Tinggal kunjungi situs ini saja dan tidak perlu repot download APK dari Play Store.”</p>
+        </section>
+    </section>
 
-		<section class="info-message is-hidden" id="developerMessage" aria-hidden="true">
-			<span class="section-label">PESAN DARI DEVELOPER</span>
-			<p>“Untuk sekarang pokoknya belajar bahasa Jepangnya cukup mudah. Tinggal kunjungi situs ini saja dan tidak perlu repot download APK dari Play Store.”</p>
-		</section>
-	</main>
-
-	<script src="../script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

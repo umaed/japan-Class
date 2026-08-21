@@ -5,34 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nihongo Trinity | Katakana</title>
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/belajar-katakana.css">
 </head>
 <body>
-    <nav class="nav-pages">
-        <button class="sidebar-toggle" type="button" aria-label="Buka menu tambahan" aria-expanded="false">☰</button>
-        <div class="logo">Trinity_System</div>
-        <div class="menu">
-            <a href="../index.html">Dashboard</a>
-            <a href="belajar.html">Hiragana</a>
-            <a href="belajar-katakana.html" class="active-pink">Katakana</a>
-            <a href="kuis.html">Training</a>
-        </div>
-    </nav>
-    <div class="sidebar-backdrop" data-sidebar-close></div>
-    <aside class="sidebar" aria-hidden="true">
-        <div class="sidebar-head"><span class="section-label">TRINITY MENU</span><button class="sidebar-close" type="button" aria-label="Tutup menu">×</button></div>
-        <p class="sidebar-greeting">Jelajahi ruang<br><strong>belajar & komunitas.</strong></p>
-        <nav class="sidebar-links" aria-label="Menu tambahan">
-            <a href="../index.html" class="sidebar-link"><span>⌂</span>Home</a><a href="jadwal.html" class="sidebar-link"><span>◷</span>Jadwal</a><a href="info.html" class="sidebar-link"><span>ⓘ</span>Info</a><a href="grup.html" class="sidebar-link"><span>♧</span>Grup</a><a href="donasi.html" class="sidebar-link"><span>♡</span>Donasi</a><a href="hiburan.html" class="sidebar-link"><span>✦</span>Hiburan</a>
-        </nav>
-        <div class="sidebar-note"><span class="status-dot"></span> Sistem aktif<br><small>Siap menemani sesi belajarmu.</small></div>
-    </aside>
-
+    
+    <!-- Bagian Pembelajaran Katakana -->
     <section class="content study-page" data-kana-type="KATAKANA">
-        <p class="eyebrow">02 / karakter serapan</p>
-        <h2 style="color: var(--neon-pink);">DATABASE KATAKANA</h2>
+        
+        <!-- Tombol Kembali -->
+        <a href="../index.html" class="back-btn">
+            <span class="back-icon">←</span> Dashboard
+        </a>
+
+        <p class="eyebrow">【 カタカナ · Katakana Lab 】</p>
+        <h2 class="page-title">Database Katakana</h2>
         <p class="study-intro">Klik kartu untuk menandai huruf yang sudah kamu kenal. Klik dua kali untuk mendengar pelafalannya.</p>
-        <div class="study-tools"><input id="kanaSearch" type="search" placeholder="Cari kana atau romaji..." aria-label="Cari kana atau romaji"><button id="resetProgress" type="button">Reset progres</button></div>
-        <div class="progress-wrap"><div class="progress-meta"><span>PROGRES PENGUASAAN</span><strong id="progressText">0 / 46</strong></div><div class="progress-bar"><span id="progressBar" style="width: 0%"></span></div></div>
+        
+        <div class="study-tools">
+            <input id="kanaSearch" type="search" placeholder="Cari kana atau romaji..." aria-label="Cari kana atau romaji">
+            <button id="resetProgress" type="button">Reset Progres</button>
+        </div>
+        
+        <div class="progress-wrap">
+            <div class="progress-meta">
+                <span>PROGRES PENGUASAAN</span>
+                <strong id="progressText">0 / 46</strong>
+            </div>
+            <div class="progress-bar">
+                <span id="progressBar" style="width: 0%"></span>
+            </div>
+        </div>
+        
         <div class="kana-grid">
             <div class="kana-box"><span>ア</span><p>a</p></div><div class="kana-box"><span>イ</span><p>i</p></div><div class="kana-box"><span>ウ</span><p>u</p></div><div class="kana-box"><span>エ</span><p>e</p></div><div class="kana-box"><span>オ</span><p>o</p></div>
             <div class="kana-box"><span>カ</span><p>ka</p></div><div class="kana-box"><span>キ</span><p>ki</p></div><div class="kana-box"><span>ク</span><p>ku</p></div><div class="kana-box"><span>ケ</span><p>ke</p></div><div class="kana-box"><span>コ</span><p>ko</p></div>
