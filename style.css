@@ -177,12 +177,14 @@ h1 { color: #fff; text-shadow: 0 0 15px var(--neon-cyan); font-size: 2.2rem; mar
 .rank-1 { border-left: 4px solid gold !important; }
 .rank-2 { border-left: 4px solid silver !important; }
 .rank-3 { border-left: 4px solid #cd7f32 !important; }
+.rank-4 { border-left: 4px solid var(--neon-cyan) !important; }
 
 /* Foto Profil Ranking */
 .rank-pic { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #555; flex-shrink: 0; }
 .rank-1 .rank-pic { border-color: gold; }
 .rank-2 .rank-pic { border-color: silver; }
 .rank-3 .rank-pic { border-color: #cd7f32; }
+.rank-4 .rank-pic { border-color: var(--neon-cyan); }
 .rank-pic img { width: 100%; height: 100%; object-fit: cover; }
 
 .rank-info { text-align: left; }
@@ -257,4 +259,78 @@ button { margin-top: 15px; padding: 10px 20px; font-size: 14px; background: tran
         gap: 5px;
     }
     .kana-box span { font-size: 20px; }
+}
+
+/* --- CHAT PANEL STYLES --- */
+.chat-panel {
+    width: 320px;
+    background: rgba(17, 17, 17, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chat-panel h2 {
+    color: var(--neon-cyan);
+    font-size: 1.2rem;
+    margin: 0;
+    text-align: center;
+}
+
+.user-select {
+    width: 100%;
+    padding: 10px;
+    background: #000;
+    color: var(--neon-pink);
+    border: 1px solid #333;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    outline: none;
+}
+
+.chat-box {
+    height: 250px;
+    background: #050505;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-login { display:flex; flex-direction:column; gap:8px; }
+.chat-login-title { margin:0 0 2px; color:#fff; font-size:.85rem; }
+.login-code { width:100%; margin:0; text-align:left; }
+.chat-login button { margin:0; }
+.login-error { min-height:16px; margin:0; color:#ff9278; font-size:.72rem; }
+.account-bar { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--muted); font-size:.75rem; }
+.account-bar strong { color:var(--neon-cyan); }
+.account-bar button { margin:0; padding:6px 9px; width:auto; font-size:.65rem; }
+
+.msg {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+.msg.is-own { background: rgba(0, 243, 255, 0.2); border-right: 3px solid var(--neon-cyan); align-self: flex-end; }
+.msg.is-other { background: rgba(255, 215, 0, 0.2); border-left: 3px solid gold; align-self: flex-start; }
+
+.msg strong { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 3px; font-family: 'Orbitron', sans-serif; }
+
+.chat-input-area { display: flex; gap: 10px; }
+.chat-input-area input { flex: 1; padding: 10px; font-size: 0.9rem; margin: 0; width: auto; }
+.chat-input-area button { margin: 0; padding: 10px 15px; width: auto; }
+
+/* Responsif untuk HP */
+@media (max-width: 768px) {
+    .chat-panel { width: 100%; box-sizing: border-box; margin-top: 20px; }
 }
