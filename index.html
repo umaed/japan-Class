@@ -6,173 +6,106 @@
     <title>Nihongo Trinity | System Hub</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <nav class="nav-pages">
-        <button class="sidebar-toggle" type="button" aria-label="Buka menu tambahan" aria-expanded="false">☰</button>
-        <div class="logo">Nihongo Trinity</div>
-        <div class="menu">
-            <a href="index.html" class="active-cyan">Dashboard</a>
-            <a href="pages/belajar.html">Hiragana</a>
-            <a href="pages/belajar-katakana.html">Katakana</a>
-            <a href="pages/kuis.html">Training</a>
+<body class="main-page">
+
+    <!-- OVERLAY LOGIN GLOBAL (Muncul pertama kali) -->
+    <div id="globalLoginOverlay" class="global-login-overlay" style="display: none;">
+        <div class="login-modal">
+            <div class="modal-icon">⛩️</div>
+            <h2>Identifikasi Member</h2>
+            <p>Silakan masuk untuk mengakses pusat kontrol dan ruang obrolan Trinity.</p>
+            
+            <select id="mainLoginUser" aria-label="Pilih akun">
+                <option value="">-- Pilih Akun --</option>
+                <option value="Umaedi">Umaedi</option>
+                <option value="Iqbal">Iqbal</option>
+                <option value="Rifki">Rifki (Swing)</option>
+                <option value="Fasya">Fasya</option>
+            </select>
+            
+            <input type="password" id="mainLoginCode" placeholder="Kode Rahasia">
+            <p id="mainLoginError" class="login-error"></p>
+            
+            <button type="button" id="mainLoginBtn" class="btn btn-primary">MASUK</button>
         </div>
-    </nav>
-    <div class="sidebar-backdrop" data-sidebar-close></div>
-    <aside class="sidebar" aria-hidden="true">
-        <div class="sidebar-head"><span class="section-label">TRINITY MENU</span><button class="sidebar-close" type="button" aria-label="Tutup menu">×</button></div>
-        <p class="sidebar-greeting">Jelajahi ruang<br><strong>belajar & komunitas.</strong></p>
-        <nav class="sidebar-links" aria-label="Menu tambahan">
-            <a href="index.html" class="sidebar-link active"><span>⌂</span>Home</a>
-            <a href="pages/jadwal.html" class="sidebar-link"><span>◷</span>Jadwal</a>
-            <a href="pages/info.html" class="sidebar-link"><span>ⓘ</span>Info</a>
-            <a href="pages/grup.html" class="sidebar-link"><span>♧</span>Grup</a>
-            <a href="pages/donasi.html" class="sidebar-link"><span>♡</span>Donasi</a>
-            <a href="pages/hiburan.html" class="sidebar-link"><span>✦</span>Hiburan</a>
-        </nav>
-        <div class="sidebar-note"><span class="status-dot"></span> Sistem aktif<br><small>Siap menemani sesi belajarmu.</small></div>
-    </aside>
+    </div>
+    <!-- END OVERLAY LOGIN -->
 
     <!-- Bagian Utama: Pusat Kontrol -->
     <header class="hub-header">
-        <p class="eyebrow">// learning command center · v2.0</p>
+        <p class="eyebrow">【 学びの道 · Path of Learning 】</p>
         <h1>Bangun fondasi Jepangmu, satu kana setiap hari.</h1>
-        <p class="subtitle">Ruang belajar ringkas untuk menguasai Hiragana, Katakana, dan refleks membaca dengan ritme yang konsisten.</p>
+        <p class="subtitle">Ruang belajar terstruktur untuk menguasai Hiragana, Katakana, dan refleks membaca dengan disiplin dan konsistensi.</p>
         
         <div class="action-buttons">
-            <a href="pages/belajar.html" class="btn btn-cyan">Mulai Hiragana →</a>
-            <a href="pages/belajar-katakana.html" class="btn btn-pink">Eksplor Katakana →</a>
-            <a href="pages/kuis.html" class="btn btn-outline">Uji refleks →</a>
+            <a href="pages/belajar.html" class="btn btn-primary">Hiragana →</a>
+            <a href="pages/belajar-katakana.html" class="btn btn-primary">Katakana →</a>
+            <div style="flex-basis: 100%; height: 0;"></div>
+            <a href="pages/kuis.html" class="btn btn-outline" style="min-width: 280px; margin-top: 5px;">Uji Refleks →</a>
         </div>
     </header>
 
     <!-- Layout Dashboard (Team di kiri, Ranking di kanan) -->
     <div class="dashboard-wrapper">
         
-        <!-- Bagian Team Roster dengan Penjelasan -->
         <section class="team-main">
-            <h2>Team Roster</h2>
+            <h2>Team Roster <span>( チーム )</span></h2>
             <div class="card-container">
-                
-                <!-- Profil Umaedi -->
                 <div class="card owner-card">
                     <span class="badge">OWNER / FOUNDER</span>
                     <h3>Umaedi</h3>
                     <p class="role">IT & Technology Specialist</p>
                     <p class="desc">Keahlian utama di bidang Ilmu Teknologi, pemrograman, dan pengembangan sistem. Bertanggung jawab penuh atas infrastruktur dan sistem keamanan web Nihongo Trinity.</p>
                 </div>
-
-                <!-- Profil Iqbal -->
                 <div class="card">
                     <h3>Iqbal</h3>
                     <p class="role">Japanese Sensei</p>
                     <p class="desc"><em>"Rapid language acquisition & Advanced linguistic comprehension."</em> Sang master bahasa Jepang di dalam tim yang menguasai tata bahasa dan kosa kata tingkat lanjut.</p>
                 </div>
-
-                <!-- Profil Rifki -->
                 <div class="card">
                     <h3>Rifki / Swing</h3>
                     <p class="role">History, Politics & Religion Expert</p>
                     <p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama. Memberikan perspektif luas dan bijaksana dalam setiap diskusi tim.</p>
                 </div>
-
-                <!-- Profil Fasya -->
                 <div class="card">
                     <h3>Fasya</h3>
                     <p class="role">Kana Learner</p>
                     <p class="desc">Member tim yang aktif berlatih kana dan ikut menjaga suasana belajar tetap seru dan konsisten.</p>
                 </div>
-
             </div>
         </section>
 
-        <!-- Bagian Ranking (Di samping, ukuran lebih kecil & ada foto) -->
         <aside class="leaderboard-panel">
-            <h2>Ranking</h2>
+            <h2>Ranking <span>( 順位 )</span></h2>
             <ol class="rank-list">
-                
-                <!-- Rank 1: Iqbal -->
-                <li class="rank-1">
-                    <div class="rank-pic">
-                        <img src="https://via.placeholder.com/50" alt="Foto Iqbal">
-                    </div>
-                    <div class="rank-info">
-                        <strong>Iqbal</strong>
-                        <p>👑 Level: Sensei</p>
-                    </div>
-                </li>
-
-                <!-- Rank 2: Umaedi -->
-                <li class="rank-2">
-                    <div class="rank-pic">
-                        <img src="https://via.placeholder.com/50" alt="Foto Umaedi">
-                    </div>
-                    <div class="rank-info">
-                        <strong>Umaedi</strong>
-                        <p>💻 Level: Senpai</p>
-                    </div>
-                </li>
-
-                <!-- Rank 3: Rifki -->
-                <li class="rank-3">
-                    <div class="rank-pic">
-                        <img src="https://via.placeholder.com/50" alt="Foto Rifki">
-                    </div>
-                    <div class="rank-info">
-                        <strong>Rifki (Swing)</strong>
-                        <p>📜 Level: Kouhai</p>
-                    </div>
-                </li>
-
-                <!-- Rank 4: Fasya -->
-                <li class="rank-4">
-                    <div class="rank-pic">
-                        <img src="https://via.placeholder.com/50" alt="Foto Fasya">
-                    </div>
-                    <div class="rank-info">
-                        <strong>Fasya</strong>
-                        <p>🌱 Level: Novice</p>
-                    </div>
-                </li>
-
+                <li class="rank-1"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Iqbal"></div><div class="rank-info"><strong>Iqbal</strong><p>👑 Level: Sensei</p></div></li>
+                <li class="rank-2"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Umaedi"></div><div class="rank-info"><strong>Umaedi</strong><p>💻 Level: Senpai</p></div></li>
+                <li class="rank-3"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Rifki"></div><div class="rank-info"><strong>Rifki (Swing)</strong><p>📜 Level: Kouhai</p></div></li>
+                <li class="rank-4"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Fasya"></div><div class="rank-info"><strong>Fasya</strong><p>🌱 Level: Novice</p></div></li>
             </ol>
+            
+            <!-- Widget Donasi -->
+            <a href="pages/donasi.html" class="donation-widget">
+                <div class="donation-icon">🍵</div>
+                <div class="donation-info">
+                    <strong>Support Our Journey</strong>
+                    <span>Berikan dukungan (Donasi)</span>
+                </div>
+                <div class="donation-arrow">→</div>
+            </a>
         </aside>
 
     </div>
-    <!-- Fitur Chat Komunikasi Tim -->
-<aside class="chat-panel">
-    <h2>Comms Link</h2>
     
-    <div id="loginPanel" class="chat-login">
-        <p class="chat-login-title">Masuk ke akunmu</p>
-        <select id="loginUser" class="user-select" aria-label="Pilih akun">
-            <option value="">Pilih akun</option>
-            <option value="Umaedi">Umaedi</option>
-            <option value="Iqbal">Iqbal</option>
-            <option value="Rifki">Rifki (Swing)</option>
-            <option value="Fasya">Fasya</option>
-        </select>
-        <input type="password" id="loginCode" class="login-code" placeholder="Kode rahasia" autocomplete="current-password">
-        <button id="loginBtn" type="button">MASUK</button>
-        <p id="loginError" class="login-error" role="alert"></p>
-    </div>
-
-    <div id="accountBar" class="account-bar" hidden>
-        <span>Masuk sebagai <strong id="currentUserLabel"></strong></span>
-        <button id="logoutBtn" type="button">KELUAR</button>
-    </div>
-
-    <!-- Kotak Pesan -->
-    <div class="chat-box" id="chatBox">
-        <!-- Pesan akan muncul di sini -->
-    </div>
-
-    <!-- Area Ketik Pesan -->
-    <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="Ketik transmisi..." disabled>
-        <button id="sendBtn" type="button" disabled>KIRIM</button>
-    </div>
-</aside>
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item is-active" href="index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item" href="pages/hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <!-- Tautan ini akan langsung membuka chat tanpa login ulang -->
+        <a class="main-bottom-item main-bottom-message" href="pages/pesan.html" aria-label="Buka pesan grup"><span class="main-bottom-icon">✉</span><span>Pesan</span></a>
+        <a class="main-bottom-item" href="pages/jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <a class="main-bottom-item" href="pages/info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
     <script src="script.js"></script>
-    <script type="module" src="chat.js"></script>
 </body>
 </html>
