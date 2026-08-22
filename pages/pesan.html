@@ -7,7 +7,7 @@
     <title>Ruang Obrolan | Trinity</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/pesan.css">
-    <script>if (!sessionStorage.getItem("nihongoChatUser")) window.location.replace("../index.html");</script>
+    <script>if (!localStorage.getItem("nihongoChatUser")) window.location.replace("../index.html");</script>
 </head>
 <body class="message-page">
     
@@ -26,11 +26,20 @@
                 <a href="../index.html" class="chat-back" aria-label="Kembali ke dashboard">×</a>
             </header>
             
+           <!-- DAFTAR MEMBER DENGAN FOTO PROFIL -->
             <div class="group-members" aria-label="Member grup">
-                <span class="member-avatar avatar-umaedi">U</span>
-                <span class="member-avatar avatar-iqbal">I</span>
-                <span class="member-avatar avatar-rifki">R</span>
-                <span class="member-avatar avatar-fasya">F</span>
+                <div class="member-avatar avatar-umaedi" style="overflow: hidden; background: #fff;">
+                    <img src="../gambar/umaedi.png" alt="U" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#D32F2F'; this.parentNode.innerHTML='U';">
+                </div>
+                <div class="member-avatar avatar-iqbal" style="overflow: hidden; background: #fff;">
+                    <img src="../gambar/iqbal.png" alt="I" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#D4AF37'; this.parentNode.innerHTML='I';">
+                </div>
+                <div class="member-avatar avatar-rifki" style="overflow: hidden; background: #fff;">
+                    <img src="../gambar/rifki.png" alt="R" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#1E88E5'; this.parentNode.innerHTML='R';">
+                </div>
+                <div class="member-avatar avatar-fasya" style="overflow: hidden; background: #fff;">
+                    <img src="../gambar/fasya.png" alt="F" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#8e44ad'; this.parentNode.innerHTML='F';">
+                </div>
                 <span class="member-count">Umaedi, Iqbal, Rifki, Fasya</span>
             </div>
             

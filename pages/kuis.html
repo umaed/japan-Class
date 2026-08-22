@@ -10,7 +10,6 @@
 <body class="main-page">
     
     <section class="content quiz-section">
-        <!-- Tombol Kembali -->
         <a href="../index.html" class="back-btn">
             <span class="back-icon">←</span> Dashboard
         </a>
@@ -19,7 +18,6 @@
         <h2 class="page-title">Sistem Evaluasi Kana</h2>
         <p class="study-intro">Uji kecepatan dan akurasimu. Kumpulkan streak, dan capai skor terbaikmu dengan kedisiplinan penuh.</p>
         
-        <!-- Papan Skor -->
         <div class="score-board">
             <div class="score-item">
                 <span class="score-label">Skor Saat Ini</span>
@@ -35,7 +33,6 @@
             </div>
         </div>
         
-        <!-- Area Kuis -->
         <div class="quiz-box">
             <div class="kana-display">
                 <h1 id="questionKana">あ</h1>
@@ -52,5 +49,43 @@
     </section>
 
     <script src="../script.js"></script>
+
+    <!-- SCRIPT PENGIRIM SKOR REAL-TIME KE DATABASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBedu3Z7AMdD5dmaudzeCwxzkegpX5Qfvs",
+            authDomain: "nihongo-trinity.firebaseapp.com",
+            projectId: "nihongo-trinity",
+            databaseURL: "https://nihongo-trinity-default-rtdb.firebaseio.com",
+            storageBucket: "nihongo-trinity.firebasestorage.app",
+            messagingSenderId: "369587231010",
+            appId: "1:369587231010:web:6f69eb2516d660b9dfad7b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Fungsi kirim skor (hanya jika pengguna sudah login)
+        function syncScoreToServer(score) {
+            const currentUser = localStorage.getItem("nihongoChatUser");
+            if (currentUser) {
+                set(ref(db, 'leaderboard/' + currentUser), score);
+            }
+        }
+
+        // Jalankan saat pertama halaman di-load
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentBest = Number(localStorage.getItem("nihongoBestScore") || 0);
+            if (currentBest > 0) syncScoreToServer(currentBest);
+        });
+
+        // Jalankan saat ada rekor baru pecah di file script.js
+        window.addEventListener('updateLeaderboard', (e) => {
+            syncScoreToServer(e.detail);
+        });
+    </script>
 </body>
 </html>
