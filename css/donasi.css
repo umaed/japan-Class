@@ -1,4 +1,152 @@
-/* Penyempurnaan halaman donasi. */
-.page-content .donation-card { border-color:rgba(255,146,120,.35); box-shadow:0 16px 36px rgba(0,0,0,.2); }
-.page-content .donation-card h3 { color:var(--neon-pink); }
-@media (max-width:600px) { .page-content { padding:42px 14px; }.page-content .donation-card { margin-top:20px; } }
+/* =========================================
+   Donasi Page - Zen/Corporate Theme
+   ========================================= */
+.donasi-page { max-width: 900px; margin: 0 auto; padding: 40px 20px 100px; text-align: center; }
+.donasi-page .page-title { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); margin: 12px 0 8px; font-weight: 700; font-family: 'Noto Serif JP', serif; }
+.donasi-page .subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin: 0 auto 40px; font-weight: 300; max-width: 650px; }
+
+/* Bagian QRIS */
+.qris-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.qris-card {
+    background: var(--card-bg);
+    border: 1px solid var(--japan-gold);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 20px rgba(212, 175, 55, 0.15);
+    max-width: 320px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Kilauan emas melintas di atas QRIS */
+.qris-card::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--japan-gold), transparent);
+    animation: goldShine 3s infinite;
+}
+
+@keyframes goldShine {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+.qris-header h3 { color: #fff; margin: 0 0 5px; font-size: 1.4rem; letter-spacing: 1px; }
+.qris-header p { color: var(--muted); font-size: 0.85rem; margin: 0 0 20px; }
+
+/* Wrapper Putih agar barcode terbaca kamera HP */
+.qris-image-wrapper {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 2px dashed rgba(0,0,0,0.1);
+}
+
+.qris-image-wrapper img { width: 100%; height: auto; display: block; border-radius: 4px; }
+
+.qris-footer span { color: var(--japan-gold); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Bagian Grid E-Wallet & Bank */
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    text-align: left;
+}
+
+.payment-section {
+    background: rgba(19, 25, 33, 0.6);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.section-title {
+    color: #fff; font-size: 1.2rem; margin: 0 0 20px;
+    padding-bottom: 15px; border-bottom: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: 10px;
+}
+
+.section-title .icon { font-size: 1.4rem; }
+
+/* Item Pembayaran (List) */
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.payment-item:hover { border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05); }
+
+.pay-info { display: flex; flex-direction: column; gap: 4px; }
+.pay-name { color: #fff; font-size: 0.95rem; font-family: 'Montserrat', sans-serif; }
+.pay-number { color: var(--japan-gold); font-size: 1.1rem; font-weight: 700; font-family: monospace; letter-spacing: 1px; }
+.pay-owner { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Tombol Salin */
+.copy-btn {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-main);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    letter-spacing: 1px;
+}
+
+.copy-btn:hover { background: var(--japan-red); color: #fff; border-color: var(--japan-red); transform: translateY(-2px); }
+
+/* Tombol Kembali */
+.back-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--muted); text-decoration: none; font-size: 12px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 25px; padding: 8px 15px;
+    background: rgba(19, 25, 33, 0.5); border: 1px solid var(--border-subtle);
+    border-radius: 6px; transition: all 0.3s ease;
+}
+
+.back-btn:hover { color: var(--japan-red); border-color: var(--japan-red); background: rgba(211, 47, 47, 0.1); }
+.back-btn:hover .back-icon { transform: translateX(-4px); }
+.back-btn .back-icon { font-size: 16px; transition: transform 0.3s ease; }
+
+/* Notifikasi Berhasil Salin (Toast) */
+.copy-toast {
+    position: fixed;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4CAF50;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+    z-index: 9999;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.copy-toast.show-toast { bottom: 100px; /* Muncul di atas navbar bawah */ }
+
+/* Responsif HP */
+@media (max-width: 600px) {
+    .donasi-page { padding: 30px 15px 110px; }
+    .payment-grid { grid-template-columns: 1fr; gap: 20px; }
+    .payment-section { padding: 15px; }
+}

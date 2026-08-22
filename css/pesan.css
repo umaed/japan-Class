@@ -65,6 +65,31 @@
     flex-shrink: 0; /* Mencegah daftar member menyusut */
 }
 
+/* FIX BUG: Kunci ukuran foto profil di top bar agar tidak raksasa */
+.member-avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;  /* Kunci Lebar */
+    height: 32px; /* Kunci Tinggi */
+    border-radius: 50%; /* Membuatnya bulat sempurna */
+    border: 2px solid #0b0f14; /* Border gelap agar batas tumpukannya terlihat jelas */
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* Efek saling tumpuk (overlap) */
+.member-avatar + .member-avatar {
+    margin-left: -12px;
+}
+
+/* Jarak teks nama dari deretan foto */
+.member-count {
+    margin-left: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 /* 4. AREA SCROLL KHUSUS HANYA UNTUK PESAN (Tengah) */
 .group-chat .chat-box { 
     display: flex; 
