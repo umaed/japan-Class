@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Konfigurasi Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBedu3Z7AMdD5dmaudzeCwxzkegpX5Qfvs",
     authDomain: "nihongo-trinity.firebaseapp.com",
@@ -31,31 +30,98 @@ const closeAlert = document.getElementById("closeAlert");
 const alertSound = new Audio('https://actions.google.com/sounds/v1/alarms/message_alert_sound.ogg');
 
 // ==========================================
+// 1. LOGIKA KHUSUS UMAEDI (GOD MODE)
+// ==========================================
+// Tampilkan jika saat refresh sudah login Umaedi
+if (localStorage.getItem("nihongoChatUser") === "Umaedi" && adminToggleBtn) {
+    adminToggleBtn.style.display = "block"; 
+}
+
+if (adminToggleBtn && adminModal) {
+    adminToggleBtn.addEventListener("click", () => adminModal.style.display = "flex");
+    closeAdminModal.addEventListener("click", () => adminModal.style.display = "none");
+    
+    sendAnnounceBtn.addEventListener("click", () => {
+        const title = announceTitle.value.trim() || "PENGUMUMAN SISTEM";
+        const message = announceMessage.value.trim();
+        if (message !== "") {
+            push(announceRef, { title, message, timestamp: Date.now(), sender: "Umaedi" });
+            adminModal.style.display = "none";
+            announceTitle.value = ""; announceMessage.value = "";
+        } else {
+            alert("Pesan tidak boleh kosong!");
+        }
+    });
+}
+
+// ==========================================
+// 2. PENERIMA PESAN BROADCAST (POP-UP)
+// ==========================================
+const recentAnnouncements = query(announceRef, limitToLast(1));
+let lastSeenId = localStorage.getItem("lastSeenAnnounce");
+let hideTimeout; 
+
+onChildAdded(recentAnnouncements, (snapshot) => {
+    const data = snapshot.val();
+    const key = snapshot.key;
+    if (lastSeenId !== key) {
+        if (alertTitle && alertMessage && globalAlert) {
+            globalAlert.classList.remove("hide-alert");
+            alertTitle.textContent = data.title;
+            alertMessage.textContent = data.message;
+            globalAlert.style.display = "block";
+            
+            alertSound.play().catch(e => console.log("Mute otomatis oleh browser"));
+            
+            localStorage.setItem("lastSeenAnnounce", key);
+            lastSeenId = key;
+            
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                globalAlert.classList.add("hide-alert");
+                setTimeout(() => {
+                    globalAlert.style.display = "none";
+                    globalAlert.classList.remove("hide-alert");
+                }, 500); 
+            }, 5000);
+        }
+    }
+});
+
+if (closeAlert) {
+    closeAlert.addEventListener("click", () => {
+        clearTimeout(hideTimeout);
+        globalAlert.classList.add("hide-alert");
+        setTimeout(() => {
+            globalAlert.style.display = "none";
+            globalAlert.classList.remove("hide-alert");
+        }, 500);
+    });
+}
+
+// ==========================================
 // 3. LOGIKA LEADERBOARD (RANKING REAL-TIME)
 // ==========================================
 const leaderboardRef = ref(db, "leaderboard");
 const leaderboardList = document.getElementById("leaderboardList");
 
 if (leaderboardList) {
-    // onValue dengan deteksi error bawaan Firebase
     onValue(leaderboardRef, (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
             const ranks = [];
             
-            // Masukkan data ke array lalu urutkan skor dari besar ke kecil
             for (let key in data) { ranks.push({ name: key, score: data[key] }); }
             ranks.sort((a, b) => b.score - a.score);
             
             leaderboardList.innerHTML = "";
-            // Perbaikan ikon emoji
+            // EMOJI SUDAH DIPERBAIKI
             const medals = ["👑 Level: Sensei", "💻 Level: Senpai", "📜 Level: Kouhai", "🌱 Level: Novice"];
             
             ranks.forEach((user, index) => {
                 const medal = medals[index] || "🌱 Level: Novice";
                 const rankClass = `rank-${index + 1 > 4 ? 4 : index + 1}`;
                 
-                // Panggil file gambar sesuai nama (ubah ke huruf kecil)
                 const imgName = user.name.toLowerCase();
                 const imagePath = `gambar/${imgName}.png`;
                 const initial = user.name.charAt(0).toUpperCase();
@@ -79,60 +145,10 @@ if (leaderboardList) {
                 leaderboardList.appendChild(li);
             });
         } else {
-            leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: var(--muted);">Belum ada data skor. Mainkan kuis untuk masuk rank!</li>`;
+            leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: var(--muted);">Belum ada data skor. Mainkan kuis!</li>`;
         }
     }, (error) => {
-        // Jika rules Firebase masih terkunci, sistem akan memunculkan pesan ini
         console.error("Firebase Error:", error);
-        leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: #D32F2F;">Akses Database Ditolak (Ubah Rules Firebase jadi "true")</li>`;
-    });
-}
-// ==========================================
-// 2. PENERIMA PESAN (HANYA MUNCUL 1X PERMANEN)
-// ==========================================
-const recentAnnouncements = query(announceRef, limitToLast(1));
-
-// MENGGUNAKAN LOCAL STORAGE AGAR TIDAK SPAM
-let lastSeenId = localStorage.getItem("lastSeenAnnounce");
-let hideTimeout; 
-
-onChildAdded(recentAnnouncements, (snapshot) => {
-    const data = snapshot.val();
-    const key = snapshot.key;
-
-    if (lastSeenId !== key) {
-        if (alertTitle && alertMessage && globalAlert) {
-            
-            globalAlert.classList.remove("hide-alert");
-            alertTitle.textContent = data.title;
-            alertMessage.textContent = data.message;
-            globalAlert.style.display = "block";
-            
-            alertSound.play().catch(e => console.log("Mute otomatis oleh browser"));
-            
-            // SIMPAN PERMANEN BAHWA PESAN INI SUDAH DILIHAT
-            localStorage.setItem("lastSeenAnnounce", key);
-            lastSeenId = key;
-
-            clearTimeout(hideTimeout);
-            hideTimeout = setTimeout(() => {
-                globalAlert.classList.add("hide-alert");
-                setTimeout(() => {
-                    globalAlert.style.display = "none";
-                    globalAlert.classList.remove("hide-alert");
-                }, 500); 
-            }, 5000);
-        }
-    }
-});
-
-if (closeAlert) {
-    closeAlert.addEventListener("click", () => {
-        clearTimeout(hideTimeout);
-        globalAlert.classList.add("hide-alert");
-        setTimeout(() => {
-            globalAlert.style.display = "none";
-            globalAlert.classList.remove("hide-alert");
-        }, 500);
+        leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: #D32F2F;">Akses Ditolak (Cek Rules Firebase)</li>`;
     });
 }
