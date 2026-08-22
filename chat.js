@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, onValue, onDisconnect, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBedu3Z7AMdD5dmaudzeCwxzkegpX5Qfvs",
@@ -22,6 +22,43 @@ const sessionKey = "nihongoChatUser";
 
 let currentUser = localStorage.getItem(sessionKey);
 const pendingMessages = [];
+
+// ==========================================
+// FITUR DETEKSI ONLINE (REAL-TIME PRESENCE)
+// ==========================================
+if (currentUser) {
+    const myPresenceRef = ref(db, 'online_users/' + currentUser);
+    const connectedRef = ref(db, '.info/connected');
+
+    onValue(connectedRef, (snap) => {
+        if (snap.val() === true) {
+            set(myPresenceRef, true);
+            onDisconnect(myPresenceRef).remove();
+        }
+    });
+}
+
+const onlineUsersRef = ref(db, 'online_users');
+onValue(onlineUsersRef, (snapshot) => {
+    const onlineCountText = document.getElementById("onlineCountText");
+    if (!onlineCountText) return;
+
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        const onlineNames = Object.keys(data); 
+        const count = onlineNames.length;
+        
+        // MODIFIKASI: Ubah nama sendiri menjadi "Kamu"
+        const displayNames = onlineNames.map(name => {
+            return name === currentUser ? "Kamu" : name;
+        });
+        
+        onlineCountText.innerHTML = `${count} Online: <span style="color: #D4AF37; font-weight: 600;">${displayNames.join(', ')}</span>`;
+    } else {
+        onlineCountText.innerHTML = `Tidak ada yang online`;
+    }
+});
+// ==========================================
 
 function setLoginState(user) {
     currentUser = user;
@@ -51,18 +88,15 @@ function renderMessage(data) {
     const headerDiv = document.createElement("div");
     headerDiv.className = "msg-header";
 
-    // Format path gambar (karena di dalam folder pages, jadi pakai ../)
     const imgName = data.name.toLowerCase();
     const imagePath = `../gambar/${imgName}.png`;
     const initial = data.name.charAt(0).toUpperCase();
 
-    // Buat elemen Avatar Foto
     const avatar = document.createElement("div");
     avatar.className = `message-avatar avatar-${imgName}`;
     avatar.style.overflow = "hidden";
-    avatar.style.backgroundColor = "#fff"; // Background putih jika PNG transparan
+    avatar.style.backgroundColor = "#fff"; 
     
-    // Logika Pintar: Jika error load, background dihapus, lalu isi diubah jadi inisial lagi
     avatar.innerHTML = `<img src="${imagePath}" alt="${initial}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.backgroundColor=''; this.parentNode.innerHTML='${initial}';">`;
     
     const sender = document.createElement("strong");

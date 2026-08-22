@@ -194,23 +194,32 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         const activeUser = localStorage.getItem("nihongoChatUser");
+        const isGuestPromptDismissed = localStorage.getItem("guestPromptDismissed"); // Cek apakah tamu sudah klik Nanti
         
         if (activeUser) {
+            // Jika sudah login, jangan tampilkan apa-apa
             globalLoginOverlay.style.display = "none";
             guestPromptPopup.style.display = "none";
             if(topLoginText) topLoginText.textContent = activeUser;
+        } else if (isGuestPromptDismissed) {
+            // Jika tamu sudah klik "Nanti", jangan diganggu lagi
+            globalLoginOverlay.style.display = "none";
+            guestPromptPopup.style.display = "none";
         } else {
+            // Pengunjung baru pertama kali, munculkan pilihan
             globalLoginOverlay.style.display = "none";
             guestPromptPopup.style.display = "flex";
         }
 
         btnPromptNanti.addEventListener("click", () => {
             guestPromptPopup.style.display = "none";
+            localStorage.setItem("guestPromptDismissed", "true"); // Simpan pilihan tamu permanen
         });
 
         btnPromptLogin.addEventListener("click", () => {
             guestPromptPopup.style.display = "none";
             globalLoginOverlay.style.display = "flex"; 
+            localStorage.setItem("guestPromptDismissed", "true"); // Simpan agar tidak muncul lagi
         });
 
         if (topLoginToggle) {
@@ -254,7 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (adminBtn) adminBtn.style.display = "block";
                 }
                 
-                // Sinkronkan skor lama user yang baru login
                 const currentBest = Number(localStorage.getItem("nihongoBestScore") || 0);
                 if (currentBest > 0) window.dispatchEvent(new CustomEvent('updateLeaderboard', { detail: currentBest }));
                 
