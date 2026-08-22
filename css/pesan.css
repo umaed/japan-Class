@@ -170,3 +170,21 @@
 .group-chat .chat-input-area button:hover { background: #b71c1c; transform: scale(1.05); }
 .group-chat .chat-emoji { background: transparent !important; color: #8B9BB4 !important; font-size: 22px !important; border-radius: 0 !important; width: auto !important; height: auto !important; }
 .group-chat .chat-emoji:hover { color: #D4AF37 !important; transform: none !important; }
+
+/* =========================================
+   Pembatas Pesan Belum Dibaca
+   ========================================= */
+.unread-divider {
+    background: rgba(255, 59, 48, 0.15) !important;
+    color: #ff3b30 !important;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.2);
+    margin: 15px 0 5px !important;
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(255, 59, 48, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(255, 59, 48, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(255, 59, 48, 0.2); }
+}
