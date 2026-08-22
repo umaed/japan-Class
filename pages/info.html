@@ -41,6 +41,25 @@
         </section>
     </section>
 
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item" href="../index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item" href="hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <a class="main-bottom-item main-bottom-message" href="pesan.html" aria-label="Buka pesan grup">
+            <span class="main-bottom-icon" style="position: relative;">
+                ✉
+                <!-- Balon Notifikasi -->
+                <span id="msgBadge" class="msg-badge" style="display: none;">0</span>
+            </span>
+            <span>Pesan</span>
+        </a>
+        <a class="main-bottom-item" href="jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <!-- Kelas is-active ada di menu Info -->
+        <a class="main-bottom-item is-active" href="info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
+
+    <!-- Script pemanggil logika notif & Firebase -->
+    <script type="module" src="../admin.js"></script>
     <script src="../script.js"></script>
 </body>
 </html>
