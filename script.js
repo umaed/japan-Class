@@ -32,7 +32,6 @@ function setupInfoProfile() {
     const profile = document.getElementById("developerProfile");
     const message = document.getElementById("developerMessage");
     if (!profile || !message) return;
-
     profile.addEventListener("click", () => {
         const isOpen = profile.getAttribute("aria-expanded") === "true";
         profile.setAttribute("aria-expanded", String(!isOpen));
@@ -75,14 +74,10 @@ function setupStudyPage() {
 
     search.addEventListener("input", () => {
         const query = search.value.toLowerCase().trim();
-        cards.forEach(card => {
-            card.style.display = card.innerText.toLowerCase().includes(query) ? "block" : "none";
-        });
+        cards.forEach(card => { card.style.display = card.innerText.toLowerCase().includes(query) ? "block" : "none"; });
     });
     document.getElementById("resetProgress").addEventListener("click", () => {
-        learned.clear();
-        localStorage.removeItem(storageKey);
-        updateProgress();
+        learned.clear(); localStorage.removeItem(storageKey); updateProgress();
     });
     updateProgress();
 }
@@ -90,15 +85,12 @@ function setupStudyPage() {
 function loadQuestion() {
     const randomIndex = Math.floor(Math.random() * kanaList.length);
     currentQuestion = kanaList[randomIndex];
-    
     document.getElementById("questionKana").innerText = currentQuestion.kana;
-    
     const typeLabel = document.getElementById("kanaType");
     if(typeLabel) {
         typeLabel.innerText = currentQuestion.type;
         typeLabel.style.color = currentQuestion.type === "HIRAGANA" ? "#00f3ff" : "#ff00ea";
     }
-
     document.getElementById("answerInput").value = "";
     document.getElementById("feedback").innerText = "";
     document.getElementById("answerInput").focus();
@@ -115,22 +107,17 @@ function checkAnswer() {
     const feedbackText = document.getElementById("feedback");
 
     if (userAnswer === currentQuestion.romaji) {
-        currentScore += 10;
-        currentStreak += 1;
+        currentScore += 10; currentStreak += 1;
         bestScore = Math.max(bestScore, currentScore);
         localStorage.setItem("nihongoBestScore", bestScore);
         updateQuizStats();
-        
-        // Memicu Sistem Ranking
         window.dispatchEvent(new CustomEvent('updateLeaderboard', { detail: bestScore }));
-
         feedbackText.innerText = "ACCESS GRANTED. PERFECT! ⚡";
         feedbackText.style.color = "#00f3ff";
         feedbackText.style.textShadow = "0 0 10px #00f3ff";
         setTimeout(loadQuestion, 1000);
     } else {
-        currentStreak = 0;
-        updateQuizStats();
+        currentStreak = 0; updateQuizStats();
         feedbackText.innerText = `ERROR. JAWABAN: '${currentQuestion.romaji.toUpperCase()}'`;
         feedbackText.style.color = "#ff00ea";
         feedbackText.style.textShadow = "0 0 10px #ff00ea";
@@ -138,12 +125,8 @@ function checkAnswer() {
 }
 
 window.onload = function() {
-    setupInfoProfile();
-    setupStudyPage();
-    if(document.getElementById("questionKana")) {
-        updateQuizStats();
-        loadQuestion();
-    }
+    setupInfoProfile(); setupStudyPage();
+    if(document.getElementById("questionKana")) { updateQuizStats(); loadQuestion(); }
 };
 
 document.getElementById("answerInput")?.addEventListener("keypress", function(event) {
@@ -151,12 +134,45 @@ document.getElementById("answerInput")?.addEventListener("keypress", function(ev
 });
 
 // ==========================================
-// LOGIKA LOGIN GLOBAL & GUEST MODE
+// LOGIKA TOMBOL PROFIL, LOGIN & GUEST
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    const globalLoginOverlay = document.getElementById("globalLoginOverlay");
-    const guestPromptPopup = document.getElementById("guestPromptPopup");
+    
+    // --- 1. Logika Klik Tombol Profil ---
     const topLoginToggle = document.getElementById("topLoginToggle");
+    const profileModalOverlay = document.getElementById("profileModalOverlay");
+    const closeProfileModal = document.getElementById("closeProfileModal");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalLoginOverlay = document.getElementById("globalLoginOverlay");
+
+    if (topLoginToggle) {
+        topLoginToggle.addEventListener("click", () => {
+            const currentUser = localStorage.getItem("nihongoChatUser");
+            if (currentUser && profileModalOverlay) {
+                profileModalOverlay.style.display = "flex";
+            } else if (globalLoginOverlay) {
+                globalLoginOverlay.style.display = "flex";
+                const guestPrompt = document.getElementById("guestPromptPopup");
+                if(guestPrompt) guestPrompt.style.display = "none";
+            }
+        });
+    }
+
+    if (closeProfileModal && profileModalOverlay) {
+        closeProfileModal.addEventListener("click", () => {
+            profileModalOverlay.style.display = "none";
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("nihongoChatUser");
+            window.location.reload();
+        });
+    }
+
+    // --- 2. Logika Guest Prompt & Login ---
+    const guestPromptPopup = document.getElementById("guestPromptPopup");
     const topLoginText = document.getElementById("topLoginText");
 
     if (globalLoginOverlay && guestPromptPopup) {
@@ -196,21 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("guestPromptDismissed", "true"); 
         });
 
-        if (topLoginToggle) {
-            topLoginToggle.addEventListener("click", () => {
-                const currentUser = localStorage.getItem("nihongoChatUser");
-                if (currentUser) {
-                    if (confirm(`Anda login sebagai ${currentUser}.\nIngin keluar dari akun ini?`)) {
-                        localStorage.removeItem("nihongoChatUser"); 
-                        window.location.reload();
-                    }
-                } else {
-                    globalLoginOverlay.style.display = "flex";
-                    guestPromptPopup.style.display = "none";
-                }
-            });
-        }
-
         if (closeLoginModal) {
             closeLoginModal.addEventListener("click", () => {
                 globalLoginOverlay.style.display = "none";
@@ -229,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(topLoginText) topLoginText.textContent = user;
                 mainLoginError.textContent = "";
 
-                // MUNCULKAN TOMBOL ADMIN SEKETIKA BILA LOGIN UMAEDI
                 if (user === "Umaedi") {
                     const adminBtn = document.getElementById("adminToggleBtn");
                     if (adminBtn) adminBtn.style.display = "block";
@@ -238,6 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const currentBest = Number(localStorage.getItem("nihongoBestScore") || 0);
                 if (currentBest > 0) window.dispatchEvent(new CustomEvent('updateLeaderboard', { detail: currentBest }));
                 
+                // Refresh untuk memuat foto profil
+                setTimeout(() => window.location.reload(), 500);
             } else {
                 mainLoginError.textContent = "Akun atau kode rahasia salah.";
             }

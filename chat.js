@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, onValue, onDisconnect, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -11,7 +11,8 @@ const firebaseConfig = {
   appId: "1:369587231010:web:6f69eb2516d660b9dfad7b"
 };
 
-const app = initializeApp(firebaseConfig);
+// SISTEM ANTI TABRAKAN FIREBASE
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getDatabase(app);
 const chatRef = ref(db, "messages");
 
@@ -22,10 +23,18 @@ const sessionKey = "nihongoChatUser";
 
 let currentUser = localStorage.getItem(sessionKey);
 const pendingMessages = [];
+let sessionLastRead = Number(localStorage.getItem("lastReadMessageTime") || Date.now());
+let unreadDividerAdded = false;
 
-// ==========================================
-// FITUR DETEKSI ONLINE (REAL-TIME PRESENCE)
-// ==========================================
+window.addEventListener('profilesUpdated', () => {
+    if(chatBox) {
+        chatBox.replaceChildren(); 
+        unreadDividerAdded = false;
+        pendingMessages.forEach(renderMessage); 
+    }
+});
+
+// FITUR DETEKSI ONLINE 
 if (currentUser) {
     const myPresenceRef = ref(db, 'online_users/' + currentUser);
     const connectedRef = ref(db, '.info/connected');
@@ -48,9 +57,10 @@ onValue(onlineUsersRef, (snapshot) => {
         const onlineNames = Object.keys(data); 
         const count = onlineNames.length;
         
-        // MODIFIKASI: Ubah nama sendiri menjadi "Kamu"
         const displayNames = onlineNames.map(name => {
-            return name === currentUser ? "Kamu" : name;
+            if (name === currentUser) return "Kamu";
+            const profile = window.userProfiles ? window.userProfiles[name] : null;
+            return profile && profile.displayName ? profile.displayName : name;
         });
         
         onlineCountText.innerHTML = `${count} Online: <span style="color: #D4AF37; font-weight: 600;">${displayNames.join(', ')}</span>`;
@@ -58,7 +68,6 @@ onValue(onlineUsersRef, (snapshot) => {
         onlineCountText.innerHTML = `Tidak ada yang online`;
     }
 });
-// ==========================================
 
 function setLoginState(user) {
     currentUser = user;
@@ -78,20 +87,13 @@ function setLoginState(user) {
     }
 }
 
-// ==========================================
-// VARIABEL PEMBATAS PESAN BARU
-// ==========================================
-// Menyimpan rekaman waktu sebelum pesan baru di-load
-let sessionLastRead = Number(localStorage.getItem("lastReadMessageTime") || Date.now());
-let unreadDividerAdded = false;
-
-// LOGIKA RENDER PESAN DENGAN FOTO PROFIL
 function renderMessage(data) {
     if (!currentUser || !chatBox) return;
 
-    // ---> PEMBATAS "PESAN BARUMU" <---
-    // Jika ada pesan yang masuknya melewati batas terakhir baca, beri garis pemisah
-    if (!unreadDividerAdded && data.timestamp > sessionLastRead && data.name !== currentUser) {
+    // Proteksi data (mencegah error jika data nama kosong)
+    const senderName = data.name || "Unknown";
+
+    if (!unreadDividerAdded && data.timestamp > sessionLastRead && senderName !== currentUser) {
         const divider = document.createElement("div");
         divider.className = "chat-day unread-divider";
         divider.innerText = "PESAN BARU BELUM DIBACA";
@@ -100,54 +102,47 @@ function renderMessage(data) {
     }
 
     const msgDiv = document.createElement("div");
-    msgDiv.className = `msg ${data.name === currentUser ? "is-own" : "is-other"}`;
-
+    msgDiv.className = `msg ${senderName === currentUser ? "is-own" : "is-other"}`;
     const headerDiv = document.createElement("div");
     headerDiv.className = "msg-header";
 
-    const imgName = data.name.toLowerCase();
-    const imagePath = `../gambar/${imgName}.png`;
-    const initial = data.name.charAt(0).toUpperCase();
+    const profile = window.userProfiles ? (window.userProfiles[senderName] || {}) : {};
+    const displayName = senderName === currentUser ? "Kamu" : (profile.displayName || senderName);
+    const isPages = window.location.pathname.includes('/pages/');
+    const basePath = isPages ? `../gambar/${senderName.toLowerCase()}.png` : `gambar/${senderName.toLowerCase()}.png`;
+    const finalPhoto = profile.photoBase64 || basePath;
+
+    const initial = displayName.charAt(0).toUpperCase();
 
     const avatar = document.createElement("div");
-    avatar.className = `message-avatar avatar-${imgName}`;
+    avatar.className = "message-avatar";
     avatar.style.overflow = "hidden";
     avatar.style.backgroundColor = "#fff"; 
-    
-    avatar.innerHTML = `<img src="${imagePath}" alt="${initial}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.backgroundColor=''; this.parentNode.innerHTML='${initial}';">`;
+    avatar.innerHTML = `<img src="${finalPhoto}" alt="${initial}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.backgroundColor='#131921'; this.parentNode.innerHTML='${initial}';">`;
     
     const sender = document.createElement("strong");
-    sender.textContent = data.name;
+    sender.textContent = displayName;
     
     headerDiv.append(avatar, sender);
 
     const contentDiv = document.createElement("div");
     contentDiv.className = "msg-content";
-    
     const message = document.createElement("span");
     message.textContent = data.message;
-    
     contentDiv.appendChild(message);
 
     msgDiv.append(headerDiv, contentDiv);
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // ---> UPDATE WAKTU BACA <---
-    // Setiap kali pesan berhasil diload/dilihat, perbarui waktu baca ke detik ini
     localStorage.setItem("lastReadMessageTime", Date.now());
 }
 
 function sendMessage() {
     if (!chatInput) return;
     const text = chatInput.value.trim();
-
     if (text !== "" && currentUser) {
-        push(chatRef, {
-            name: currentUser,
-            message: text,
-            timestamp: Date.now()
-        });
+        push(chatRef, { name: currentUser, message: text, timestamp: Date.now() });
         chatInput.value = ""; 
     }
 }
@@ -162,7 +157,5 @@ setLoginState(currentUser);
 
 if(sendBtn && chatInput) {
     sendBtn.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendMessage();
-    });
+    chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 }

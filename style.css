@@ -245,34 +245,38 @@ h1 { color: #fff; font-size: 2.6rem; margin-bottom: 15px; margin-top: 0; font-we
 .login-modal .btn { width: 100%; margin: 0; padding: 15px; font-size: 14px; letter-spacing: 2px; }
 
 /* =========================================
-   Tombol Login (Pojok Kanan Atas)
+   Tombol Login & Profil (Pojok Kanan Atas)
    ========================================= */
 .top-login-toggle {
-    position: absolute;
+    position: fixed; /* Berubah menjadi Fixed agar menempel rapi saat scroll */
     top: 20px;
     right: 20px;
-    background: rgba(19, 25, 33, 0.6);
-    border: 1px solid var(--japan-gold);
-    color: var(--japan-gold);
-    padding: 8px 16px;
-    border-radius: 20px;
+    background: rgba(11, 15, 20, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    padding: 6px 16px 6px 8px; /* Jarak dibuat tidak simetris agar avatar pas */
+    border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    z-index: 90;
-    backdrop-filter: blur(5px);
-    transition: 0.3s ease;
+    gap: 10px;
+    z-index: 190;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 }
 
 .top-login-toggle:hover {
-    background: var(--japan-gold);
-    color: var(--bg-color);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    background: rgba(19, 25, 33, 0.9);
+    border-color: var(--japan-gold);
+    color: var(--japan-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.25);
 }
+
 
 /* =========================================
    Pop-Up Kecil (Guest Prompt)
@@ -447,19 +451,19 @@ h1 { color: #fff; font-size: 2.6rem; margin-bottom: 15px; margin-top: 0; font-we
     position: absolute;
     top: -6px;
     right: -10px;
-    background: #ff3b30;
+    background: #8e44ad; /* Diubah menjadi Ungu Terang */
     color: #fff;
     font-size: 10px;
     font-weight: 700;
     font-family: 'Montserrat', sans-serif;
     padding: 2px 5px;
     border-radius: 10px;
-    border: 2px solid var(--japan-red);
+    border: 2px solid var(--bg-color); /* Border gelap agar kontras menonjol */
     display: grid;
     place-items: center;
     min-width: 18px;
     height: 18px;
-    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.6);
+    box-shadow: 0 4px 10px rgba(142, 68, 173, 0.6); /* Efek glow ungu */
     animation: popBadge 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
