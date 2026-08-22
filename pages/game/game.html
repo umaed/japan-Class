@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nihongo Trinity | Game Corner</title>
+    <!-- Memanggil CSS Global (naik 2 tingkat folder) -->
+    <link rel="stylesheet" href="../../style.css">
+    <!-- Memanggil CSS Khusus Game -->
+    <link rel="stylesheet" href="../../css/game/game.css">
+</head>
+<body class="main-page">
+    
+    <section class="content game-page">
+        <a href="../hiburan.html" class="back-btn">
+            <span class="back-icon">←</span> Kembali ke Hiburan
+        </a>
+
+        <p class="eyebrow">【 ゲーム · Minigames 】</p>
+        <h1 class="page-title">Game Corner</h1>
+        <p class="subtitle">Mainkan mini-game kasual untuk menyegarkan pikiranmu.</p>
+
+        <!-- LOBBY GAME (Daftar 5 Game) -->
+        <div id="gameLobby" class="entertainment-grid">
+            <div class="ent-card" onclick="openGame('janken')">
+                <div class="ent-icon">✊✌️✋</div>
+                <h3>Jankenpon</h3>
+                <p>Batu, Gunting, Kertas legendaris. Kalahkan AI sistem!</p>
+            </div>
+            
+            <div class="ent-card" onclick="openGame('omikuji')">
+                <div class="ent-icon">🥠</div>
+                <h3>Omikuji Gacha</h3>
+                <p>Tarik gulungan kertas dan ramal nasib harimu ala kuil Jepang.</p>
+            </div>
+
+            <div class="ent-card" onclick="openGame('tebak')">
+                <div class="ent-icon">🔢</div>
+                <h3>Kazuate (Tebak Angka)</h3>
+                <p>Sistem telah menyembunyikan angka 1-100. Bisa tebak?</p>
+            </div>
+
+            <div class="ent-card" onclick="openGame('ninja')">
+                <div class="ent-icon">🥷</div>
+                <h3>Ninja Reflex</h3>
+                <p>Klik shuriken yang berpindah-pindah dengan cepat!</p>
+            </div>
+
+            <div class="ent-card highlight-card" onclick="openGame('memory')">
+                <div class="ent-icon">🎴</div>
+                <h3>Kana Match</h3>
+                <p>Uji memori dengan mencocokkan pasangan huruf Hiragana.</p>
+            </div>
+        </div>
+
+        <!-- WADAH ARENA BERMAIN (Muncul saat game dipilih) -->
+        <div id="gameArena" class="game-arena-wrapper" style="display: none;">
+            <button class="btn btn-outline" onclick="closeGame()" style="margin-bottom: 20px;">× Keluar dari Game</button>
+            <div id="gameContent" class="game-content-box">
+                <!-- Konten game akan dirender oleh Javascript di sini -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Script Logika 5 Mini-Game -->
+    <script>
+        const lobby = document.getElementById('gameLobby');
+        const arena = document.getElementById('gameArena');
+        const content = document.getElementById('gameContent');
+
+        function openGame(type) {
+            lobby.style.display = 'none';
+            arena.style.display = 'block';
+            content.innerHTML = ''; 
+
+            if (type === 'janken') {
+                content.innerHTML = `
+                    <h2>Jankenpon (Batu-Gunting-Kertas)</h2>
+                    <div style="font-size:50px; margin:20px 0;" id="jkDisplay">🤖 vs 👤</div>
+                    <p id="jkResult" style="color:var(--japan-gold); font-weight:bold;">Pilih senjatamu!</p>
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                        <button class="btn btn-primary" onclick="playJanken('Batu', '✊')">✊ Batu</button>
+                        <button class="btn btn-primary" onclick="playJanken('Gunting', '✌️')">✌️ Gunting</button>
+                        <button class="btn btn-primary" onclick="playJanken('Kertas', '✋')">✋ Kertas</button>
+                    </div>
+                `;
+            } else if (type === 'omikuji') {
+                content.innerHTML = `
+                    <h2>Omikuji (Ramalan Nasib)</h2>
+                    <div style="font-size:60px; margin:20px 0;" id="omiIcon">⛩️</div>
+                    <p id="omiText">Tekan tombol untuk mengambil ramalan hari ini.</p>
+                    <button class="btn btn-primary" style="margin-top:20px;" onclick="drawOmikuji()">Tarik Ramalan</button>
+                `;
+            } else if (type === 'tebak') {
+                window.secretNumber = Math.floor(Math.random() * 100) + 1;
+                content.innerHTML = `
+                    <h2>Tebak Angka (1 - 100)</h2>
+                    <p id="tebakHint">Saya memikirkan sebuah angka. Coba tebak!</p>
+                    <input type="number" id="tebakInput" placeholder="Masukkan angka..." style="padding:10px; border-radius:5px; border:none; width:60%; margin:10px 0; text-align:center;">
+                    <br>
+                    <button class="btn btn-primary" onclick="checkTebak()">Tebak</button>
+                `;
+            } else if (type === 'ninja') {
+                window.ninjaScore = 0;
+                content.innerHTML = `
+                    <h2>Ninja Reflex</h2>
+                    <p>Skor: <span id="nScore">0</span> | Waktu: <span id="nTime">15</span>s</p>
+                    <button class="btn btn-primary" id="nStart" onclick="startNinja()">Mulai</button>
+                    <div id="nBoard" style="position:relative; width:100%; height:300px; background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:8px; margin-top:15px; overflow:hidden;"></div>
+                `;
+            } else if (type === 'memory') {
+                initMemoryGame();
+            }
+        }
+
+        function closeGame() {
+            arena.style.display = 'none';
+            lobby.style.display = 'grid';
+        }
+
+        // --- Logika Jankenpon ---
+        function playJanken(player, playerIcon) {
+            const choices = [{name: 'Batu', icon: '✊'}, {name: 'Gunting', icon: '✌️'}, {name: 'Kertas', icon: '✋'}];
+            const ai = choices[Math.floor(Math.random() * choices.length)];
+            const display = document.getElementById('jkDisplay');
+            const resultText = document.getElementById('jkResult');
+
+            display.innerHTML = `${ai.icon} vs ${playerIcon}`;
+            
+            if (player === ai.name) resultText.innerHTML = "Seri! (引き分け)";
+            else if ((player === 'Batu' && ai.name === 'Gunting') || (player === 'Gunting' && ai.name === 'Kertas') || (player === 'Kertas' && ai.name === 'Batu')) {
+                resultText.innerHTML = "Kamu Menang! (勝ち) 🎉";
+                resultText.style.color = "#4CAF50";
+            } else {
+                resultText.innerHTML = "Kamu Kalah! (負け) 💀";
+                resultText.style.color = "#D32F2F";
+            }
+        }
+
+        // --- Logika Omikuji ---
+        function drawOmikuji() {
+            const fortunes = [
+                { title: "Daikichi (大吉)", desc: "Sangat Beruntung! Hari ini segalanya akan berjalan lancar.", color: "#D4AF37" },
+                { title: "Kichi (吉)", desc: "Beruntung. Pertahankan kerja kerasmu.", color: "#4CAF50" },
+                { title: "Shokichi (小吉)", desc: "Sedikit Beruntung. Ada rintangan kecil tapi bisa diatasi.", color: "#1E88E5" },
+                { title: "Kyo (凶)", desc: "Kurang Beruntung. Berhati-hatilah dalam mengambil keputusan hari ini.", color: "#D32F2F" }
+            ];
+            const pick = fortunes[Math.floor(Math.random() * fortunes.length)];
+            document.getElementById('omiIcon').innerHTML = "📜";
+            document.getElementById('omiText').innerHTML = `<strong style="font-size:1.5rem; color:${pick.color}">${pick.title}</strong><br><br>${pick.desc}`;
+        }
+
+        // --- Logika Tebak Angka ---
+        function checkTebak() {
+            const val = parseInt(document.getElementById('tebakInput').value);
+            const hint = document.getElementById('tebakHint');
+            if (isNaN(val)) { hint.innerHTML = "Masukkan angka yang valid!"; return; }
+
+            if (val === window.secretNumber) {
+                hint.innerHTML = `🎉 BENAR! Angkanya adalah ${window.secretNumber}!`;
+                hint.style.color = "#4CAF50";
+                window.secretNumber = Math.floor(Math.random() * 100) + 1; // Reset
+            } else if (val < window.secretNumber) {
+                hint.innerHTML = "Terlalu KECIL! Naikkan angkamu.";
+                hint.style.color = "#D4AF37";
+            } else {
+                hint.innerHTML = "Terlalu BESAR! Turunkan angkamu.";
+                hint.style.color = "#D32F2F";
+            }
+        }
+
+        // --- Logika Ninja Reflex ---
+        function startNinja() {
+            document.getElementById('nStart').style.display = 'none';
+            window.ninjaScore = 0;
+            let time = 15;
+            document.getElementById('nScore').innerText = window.ninjaScore;
+            document.getElementById('nTime').innerText = time;
+            
+            const board = document.getElementById('nBoard');
+            board.innerHTML = '';
+            
+            const target = document.createElement('div');
+            target.innerHTML = '🥷';
+            target.style.position = 'absolute';
+            target.style.fontSize = '35px';
+            target.style.cursor = 'pointer';
+            board.appendChild(target);
+
+            function moveTarget() {
+                const maxX = board.clientWidth - 40;
+                const maxY = board.clientHeight - 40;
+                target.style.left = Math.floor(Math.random() * maxX) + 'px';
+                target.style.top = Math.floor(Math.random() * maxY) + 'px';
+            }
+
+            target.onclick = function() {
+                window.ninjaScore++;
+                document.getElementById('nScore').innerText = window.ninjaScore;
+                moveTarget();
+            };
+            moveTarget();
+
+            const timer = setInterval(() => {
+                time--;
+                document.getElementById('nTime').innerText = time;
+                if(time <= 0) {
+                    clearInterval(timer);
+                    board.innerHTML = `<h3 style="color:#fff; text-align:center; padding-top:100px;">Waktu Habis!<br>Skor: ${window.ninjaScore}</h3>`;
+                    document.getElementById('nStart').style.display = 'inline-block';
+                    document.getElementById('nStart').innerText = "Main Lagi";
+                }
+            }, 1000);
+        }
+
+        // --- Logika Kana Memory ---
+        function initMemoryGame() {
+            const kanas = ['あ', 'あ', 'い', 'い', 'う', 'う', 'え', 'え', 'お', 'お', 'か', 'か'];
+            kanas.sort(() => 0.5 - Math.random()); // Acak kartu
+            
+            content.innerHTML = `
+                <h2>Kana Memory</h2>
+                <div id="memGrid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-top:20px;"></div>
+            `;
+            const grid = document.getElementById('memGrid');
+            
+            let flipped = [];
+            let matched = 0;
+
+            kanas.forEach((kana, index) => {
+                const card = document.createElement('div');
+                card.className = 'mem-card';
+                card.dataset.kana = kana;
+                card.dataset.index = index;
+                card.innerHTML = "?";
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+
+            function flipCard(card) {
+                if (flipped.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                    card.innerHTML = card.dataset.kana;
+                    card.classList.add('flipped');
+                    card.style.background = 'var(--japan-red)';
+                    card.style.color = '#fff';
+                    flipped.push(card);
+
+                    if (flipped.length === 2) {
+                        setTimeout(checkMatch, 800);
+                    }
+                }
+            }
+
+            function checkMatch() {
+                const [c1, c2] = flipped;
+                if (c1.dataset.kana === c2.dataset.kana) {
+                    c1.classList.add('matched'); c2.classList.add('matched');
+                    c1.style.background = 'var(--japan-gold)'; c2.style.background = 'var(--japan-gold)';
+                    matched += 2;
+                    if (matched === kanas.length) alert("Sugoii! Kamu menemukan semua pasangannya!");
+                } else {
+                    c1.innerHTML = "?"; c2.innerHTML = "?";
+                    c1.classList.remove('flipped'); c2.classList.remove('flipped');
+                    c1.style.background = 'rgba(255,255,255,0.05)'; c2.style.background = 'rgba(255,255,255,0.05)';
+                    c1.style.color = 'var(--text-main)'; c2.style.color = 'var(--text-main)';
+                }
+                flipped = [];
+            }
+        }
+    </script>
+</body>
+</html>
