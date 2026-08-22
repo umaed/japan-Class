@@ -152,3 +152,43 @@ if (leaderboardList) {
         leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: #D32F2F;">Akses Ditolak (Cek Rules Firebase)</li>`;
     });
 }
+
+// ==========================================
+// 4. NOTIFIKASI PESAN BELUM DIBACA (GLOBAL)
+// ==========================================
+const msgBadge = document.getElementById("msgBadge");
+const chatMessagesRef = ref(db, "messages");
+
+if (currentUser && msgBadge) {
+    // Memantau 30 pesan terakhir
+    const recentMessages = query(chatMessagesRef, limitToLast(30));
+    
+    onValue(recentMessages, (snapshot) => {
+        if (snapshot.exists()) {
+            let unreadCount = 0;
+            
+            // Ambil waktu terakhir kali user ini membuka halaman pesan
+            let lastRead = Number(localStorage.getItem("lastReadMessageTime"));
+            if (!lastRead) {
+                lastRead = Date.now();
+                localStorage.setItem("lastReadMessageTime", lastRead);
+            }
+
+            snapshot.forEach((childSnap) => {
+                const msg = childSnap.val();
+                // Hitung pesan yang dikirim SETELAH waktu lastRead dan BUKAN dari diri sendiri
+                if (msg.timestamp > lastRead && msg.name !== currentUser) {
+                    unreadCount++;
+                }
+            });
+            
+            // Munculkan balon merah jika ada pesan baru
+            if (unreadCount > 0) {
+                msgBadge.innerText = unreadCount > 9 ? "9+" : unreadCount;
+                msgBadge.style.display = "grid";
+            } else {
+                msgBadge.style.display = "none";
+            }
+        }
+    });
+}

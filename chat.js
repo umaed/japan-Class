@@ -78,9 +78,26 @@ function setLoginState(user) {
     }
 }
 
+// ==========================================
+// VARIABEL PEMBATAS PESAN BARU
+// ==========================================
+// Menyimpan rekaman waktu sebelum pesan baru di-load
+let sessionLastRead = Number(localStorage.getItem("lastReadMessageTime") || Date.now());
+let unreadDividerAdded = false;
+
 // LOGIKA RENDER PESAN DENGAN FOTO PROFIL
 function renderMessage(data) {
     if (!currentUser || !chatBox) return;
+
+    // ---> PEMBATAS "PESAN BARUMU" <---
+    // Jika ada pesan yang masuknya melewati batas terakhir baca, beri garis pemisah
+    if (!unreadDividerAdded && data.timestamp > sessionLastRead && data.name !== currentUser) {
+        const divider = document.createElement("div");
+        divider.className = "chat-day unread-divider";
+        divider.innerText = "PESAN BARU BELUM DIBACA";
+        chatBox.appendChild(divider);
+        unreadDividerAdded = true;
+    }
 
     const msgDiv = document.createElement("div");
     msgDiv.className = `msg ${data.name === currentUser ? "is-own" : "is-other"}`;
@@ -115,6 +132,10 @@ function renderMessage(data) {
     msgDiv.append(headerDiv, contentDiv);
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    // ---> UPDATE WAKTU BACA <---
+    // Setiap kali pesan berhasil diload/dilihat, perbarui waktu baca ke detik ini
+    localStorage.setItem("lastReadMessageTime", Date.now());
 }
 
 function sendMessage() {
