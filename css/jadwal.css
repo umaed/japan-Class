@@ -122,3 +122,45 @@
     .location-text { text-align: center; }
     .schedule-grid { grid-template-columns: 1fr; }
 }
+
+/* =========================================
+   Penyempurnaan Posisi & Tombol Kembali
+   ========================================= */
+
+/* Pastikan section memiliki posisi relatif dan padding bawah agar tidak tertutup nav */
+.info-page, .jadwal-page { 
+    position: relative; 
+    padding: 80px 20px 110px; /* Padding atas ditambahkan agar tombol tidak menabrak judul */
+    text-align: center;
+}
+
+/* Gaya Tombol Kembali yang tersembunyi sebelumnya */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 15px;
+    background: rgba(19, 25, 33, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 30px;
+    left: 20px;
+}
+
+.back-btn:hover {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+.back-btn:hover .back-icon { 
+    transform: translateX(-4px); 
+}
