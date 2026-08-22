@@ -30,10 +30,14 @@ const closeAlert = document.getElementById("closeAlert");
 const alertSound = new Audio('https://actions.google.com/sounds/v1/alarms/message_alert_sound.ogg');
 
 // ==========================================
+// MENDETEKSI AKUN YANG LOGIN (INI YANG SEBELUMNYA TERLEWAT)
+// ==========================================
+const currentUser = localStorage.getItem("nihongoChatUser");
+
+// ==========================================
 // 1. LOGIKA KHUSUS UMAEDI (GOD MODE)
 // ==========================================
-// Tampilkan jika saat refresh sudah login Umaedi
-if (localStorage.getItem("nihongoChatUser") === "Umaedi" && adminToggleBtn) {
+if (currentUser === "Umaedi" && adminToggleBtn) {
     adminToggleBtn.style.display = "block"; 
 }
 
@@ -115,7 +119,6 @@ if (leaderboardList) {
             ranks.sort((a, b) => b.score - a.score);
             
             leaderboardList.innerHTML = "";
-            // EMOJI SUDAH DIPERBAIKI
             const medals = ["👑 Level: Sensei", "💻 Level: Senpai", "📜 Level: Kouhai", "🌱 Level: Novice"];
             
             ranks.forEach((user, index) => {
@@ -159,15 +162,14 @@ if (leaderboardList) {
 const msgBadge = document.getElementById("msgBadge");
 const chatMessagesRef = ref(db, "messages");
 
+// Sekarang blok ini akan berjalan karena currentUser sudah terdeteksi!
 if (currentUser && msgBadge) {
-    // Memantau 30 pesan terakhir
     const recentMessages = query(chatMessagesRef, limitToLast(30));
     
     onValue(recentMessages, (snapshot) => {
         if (snapshot.exists()) {
             let unreadCount = 0;
             
-            // Ambil waktu terakhir kali user ini membuka halaman pesan
             let lastRead = Number(localStorage.getItem("lastReadMessageTime"));
             if (!lastRead) {
                 lastRead = Date.now();
@@ -176,13 +178,11 @@ if (currentUser && msgBadge) {
 
             snapshot.forEach((childSnap) => {
                 const msg = childSnap.val();
-                // Hitung pesan yang dikirim SETELAH waktu lastRead dan BUKAN dari diri sendiri
                 if (msg.timestamp > lastRead && msg.name !== currentUser) {
                     unreadCount++;
                 }
             });
             
-            // Munculkan balon merah jika ada pesan baru
             if (unreadCount > 0) {
                 msgBadge.innerText = unreadCount > 9 ? "9+" : unreadCount;
                 msgBadge.style.display = "grid";
