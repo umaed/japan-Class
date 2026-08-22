@@ -8,9 +8,27 @@
 </head>
 <body class="main-page">
 
-    <!-- OVERLAY LOGIN GLOBAL (Muncul pertama kali) -->
+    <!-- Tombol Login / Profil di Pojok Kanan Atas -->
+    <button id="topLoginToggle" class="top-login-toggle" aria-label="Login Member">
+        <span class="icon">👤</span> <span id="topLoginText">Login</span>
+    </button>
+
+    <!-- POPUP KECIL (Pilihan Guest / Member) -->
+    <div id="guestPromptPopup" class="guest-prompt-popup" style="display: none;">
+        <div class="prompt-content">
+            <span class="prompt-icon">🛡️</span>
+            <p>Jika Anda adalah <strong>Team / Member</strong>, silakan login untuk akses fitur penuh.</p>
+            <div class="prompt-buttons">
+                <button id="btnPromptNanti" class="btn-nanti">Nanti</button>
+                <button id="btnPromptLogin" class="btn-login">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY LOGIN GLOBAL (Utama) -->
     <div id="globalLoginOverlay" class="global-login-overlay" style="display: none;">
         <div class="login-modal">
+            <span id="closeLoginModal" class="close-modal">×</span>
             <div class="modal-icon">⛩️</div>
             <h2>Identifikasi Member</h2>
             <p>Silakan masuk untuk mengakses pusat kontrol dan ruang obrolan Trinity.</p>
@@ -29,7 +47,6 @@
             <button type="button" id="mainLoginBtn" class="btn btn-primary">MASUK</button>
         </div>
     </div>
-    <!-- END OVERLAY LOGIN -->
 
     <!-- Bagian Utama: Pusat Kontrol -->
     <header class="hub-header">
@@ -45,67 +62,84 @@
         </div>
     </header>
 
-    <!-- Layout Dashboard (Team di kiri, Ranking di kanan) -->
+    <!-- Layout Dashboard -->
     <div class="dashboard-wrapper">
-        
         <section class="team-main">
             <h2>Team Roster <span>( チーム )</span></h2>
             <div class="card-container">
-                <div class="card owner-card">
-                    <span class="badge">OWNER / FOUNDER</span>
-                    <h3>Umaedi</h3>
-                    <p class="role">IT & Technology Specialist</p>
-                    <p class="desc">Keahlian utama di bidang Ilmu Teknologi, pemrograman, dan pengembangan sistem. Bertanggung jawab penuh atas infrastruktur dan sistem keamanan web Nihongo Trinity.</p>
-                </div>
-                <div class="card">
-                    <h3>Iqbal</h3>
-                    <p class="role">Japanese Sensei</p>
-                    <p class="desc"><em>"Rapid language acquisition & Advanced linguistic comprehension."</em> Sang master bahasa Jepang di dalam tim yang menguasai tata bahasa dan kosa kata tingkat lanjut.</p>
-                </div>
-                <div class="card">
-                    <h3>Rifki / Swing</h3>
-                    <p class="role">History, Politics & Religion Expert</p>
-                    <p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama. Memberikan perspektif luas dan bijaksana dalam setiap diskusi tim.</p>
-                </div>
-                <div class="card">
-                    <h3>Fasya</h3>
-                    <p class="role">Kana Learner</p>
-                    <p class="desc">Member tim yang aktif berlatih kana dan ikut menjaga suasana belajar tetap seru dan konsisten.</p>
-                </div>
+                <div class="card owner-card"><span class="badge">OWNER / FOUNDER</span><h3>Umaedi</h3><p class="role">IT & Technology Specialist</p><p class="desc">Keahlian utama di bidang Ilmu Teknologi, pemrograman, dan pengembangan sistem.</p></div>
+                <div class="card"><h3>Iqbal</h3><p class="role">Japanese Sensei</p><p class="desc"><em>"Rapid language acquisition..."</em> Sang master bahasa Jepang di dalam tim.</p></div>
+                <div class="card"><h3>Rifki / Swing</h3><p class="role">History, Politics & Religion</p><p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama.</p></div>
+                <div class="card"><h3>Fasya</h3><p class="role">Kana Learner</p><p class="desc">Member tim yang aktif berlatih kana dan ikut menjaga suasana belajar tetap seru.</p></div>
             </div>
         </section>
 
+        <!-- BAGIAN RANKING YANG SUDAH DIUBAH -->
         <aside class="leaderboard-panel">
             <h2>Ranking <span>( 順位 )</span></h2>
-            <ol class="rank-list">
-                <li class="rank-1"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Iqbal"></div><div class="rank-info"><strong>Iqbal</strong><p>👑 Level: Sensei</p></div></li>
-                <li class="rank-2"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Umaedi"></div><div class="rank-info"><strong>Umaedi</strong><p>💻 Level: Senpai</p></div></li>
-                <li class="rank-3"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Rifki"></div><div class="rank-info"><strong>Rifki (Swing)</strong><p>📜 Level: Kouhai</p></div></li>
-                <li class="rank-4"><div class="rank-pic"><img src="https://via.placeholder.com/50" alt="Foto Fasya"></div><div class="rank-info"><strong>Fasya</strong><p>🌱 Level: Novice</p></div></li>
+            
+            <ol class="rank-list" id="leaderboardList">
+                <li style="text-align: center; justify-content: center; color: var(--muted);">
+                    Memuat data server...
+                </li>
             </ol>
             
-            <!-- Widget Donasi -->
             <a href="pages/donasi.html" class="donation-widget">
                 <div class="donation-icon">🍵</div>
-                <div class="donation-info">
-                    <strong>Support Our Journey</strong>
-                    <span>Berikan dukungan (Donasi)</span>
-                </div>
+                <div class="donation-info"><strong>Support Our Journey</strong><span>Berikan dukungan (Donasi)</span></div>
                 <div class="donation-arrow">→</div>
             </a>
         </aside>
-
     </div>
     
     <!-- Navigasi Bawah -->
     <nav class="main-bottom-nav" aria-label="Navigasi utama">
         <a class="main-bottom-item is-active" href="index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
         <a class="main-bottom-item" href="pages/hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
-        <!-- Tautan ini akan langsung membuka chat tanpa login ulang -->
         <a class="main-bottom-item main-bottom-message" href="pages/pesan.html" aria-label="Buka pesan grup"><span class="main-bottom-icon">✉</span><span>Pesan</span></a>
         <a class="main-bottom-item" href="pages/jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
         <a class="main-bottom-item" href="pages/info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
     </nav>
+
+    <!-- FITUR KHUSUS ADMIN (UMAEDI) & GLOBAL ALERT -->
+    <button id="adminToggleBtn" class="admin-toggle-btn" style="display: none;">
+        ⚙️ SYSTEM OVERRIDE
+    </button>
+
+    <div id="adminModal" class="global-login-overlay" style="display: none; z-index: 10000;">
+        <div class="login-modal" style="border-color: var(--japan-red);">
+            <span id="closeAdminModal" class="close-modal">×</span>
+            <div class="modal-icon">⚠️</div>
+            <h2 style="color: var(--japan-red);">Admin Panel</h2>
+            <p>Kirim update atau pengumuman ke SEMUA pengunjung saat ini.</p>
+            
+            <input type="text" id="announceTitle" placeholder="Judul (ex: UPDATE JADWAL / PENTING)">
+            <textarea id="announceMessage" rows="4" placeholder="Ketik isi pengumuman di sini..." style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(8,12,16,.8); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; font-family: 'Montserrat', sans-serif; resize: none;"></textarea>
+            
+            <button type="button" id="sendAnnounceBtn" class="btn btn-primary">BROADCAST SEKARANG</button>
+        </div>
+    </div>
+
+    <!-- Pop-Up Peringatan -->
+    <div id="globalAlert" class="global-alert" style="display: none;">
+        <div class="alert-glow"></div>
+        <div class="alert-content">
+            <div class="alert-header">
+                <div class="alert-icon-wrapper"><span class="alert-icon">⛩️</span></div>
+                <div class="alert-titles">
+                    <span class="alert-sender">System Broadcast // Dev: Umaedi</span>
+                    <strong id="alertTitle">PENGUMUMAN SISTEM</strong>
+                </div>
+                <span id="closeAlert" class="close-alert" title="Tutup">×</span>
+            </div>
+            <div class="alert-body">
+                <p id="alertMessage">Pesan dari sistem...</p>
+            </div>
+        </div>
+        <div class="alert-progress"></div>
+    </div>
+    
+    <script type="module" src="admin.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

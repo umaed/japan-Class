@@ -243,3 +243,199 @@ h1 { color: #fff; font-size: 2.6rem; margin-bottom: 15px; margin-top: 0; font-we
 
 .login-modal .login-error { color: var(--japan-red); font-size: 12px; margin: -5px 0 15px; min-height: 15px; font-weight: 600; text-align: left; }
 .login-modal .btn { width: 100%; margin: 0; padding: 15px; font-size: 14px; letter-spacing: 2px; }
+
+/* =========================================
+   Tombol Login (Pojok Kanan Atas)
+   ========================================= */
+.top-login-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(19, 25, 33, 0.6);
+    border: 1px solid var(--japan-gold);
+    color: var(--japan-gold);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 90;
+    backdrop-filter: blur(5px);
+    transition: 0.3s ease;
+}
+
+.top-login-toggle:hover {
+    background: var(--japan-gold);
+    color: var(--bg-color);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* =========================================
+   Pop-Up Kecil (Guest Prompt)
+   ========================================= */
+.guest-prompt-popup {
+    position: fixed;
+    bottom: 100px; /* Agar tidak tertutup navigasi bawah */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    border: 1px solid var(--japan-red);
+    border-radius: 12px;
+    padding: 20px;
+    width: min(90%, 350px);
+    z-index: 9998;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: slideUpPrompt 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpPrompt {
+    from { opacity: 0; transform: translate(-50%, 50px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.prompt-icon { font-size: 30px; margin-bottom: 10px; display: block; }
+.guest-prompt-popup p { color: var(--text-main); font-size: 0.9rem; line-height: 1.6; margin: 0 0 20px 0; }
+.guest-prompt-popup strong { color: var(--japan-gold); }
+
+.prompt-buttons { display: flex; gap: 12px; width: 100%; }
+.btn-nanti { flex: 1; padding: 10px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+.btn-nanti:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: #fff; }
+
+.btn-login { flex: 1; padding: 10px; background: var(--japan-red); border: 1px solid var(--japan-red); color: #fff; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+.btn-login:hover { background: #b71c1c; }
+
+/* Tombol Tutup (X) di Modal Utama */
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 26px; color: var(--muted); cursor: pointer; transition: 0.3s; }
+.close-modal:hover { color: var(--japan-red); }
+
+/* =========================================
+   System Override (Umaedi Only) & Global Alert
+   ========================================= */
+.admin-toggle-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: var(--japan-red);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 12px 18px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    z-index: 190;
+    box-shadow: 0 10px 25px rgba(211, 47, 47, 0.6);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.admin-toggle-btn:hover {
+    transform: scale(1.05);
+    background: #b71c1c;
+    border-color: #fff;
+}
+
+/* =========================================
+   Global Alert (Premium Animated UI)
+   ========================================= */
+.global-alert {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92%, 450px);
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(211, 47, 47, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(211, 47, 47, 0.15);
+    z-index: 10001;
+    overflow: hidden;
+    /* Animasi masuk memantul */
+    animation: slideBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Animasi keluar */
+.global-alert.hide-alert {
+    animation: slideUpFade 0.5s ease forwards;
+}
+
+@keyframes slideBouncy {
+    0% { top: -150px; opacity: 0; transform: translateX(-50%) scale(0.8); }
+    100% { top: 25px; opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes slideUpFade {
+    0% { top: 25px; opacity: 1; transform: translateX(-50%) scale(1); }
+    100% { top: -150px; opacity: 0; transform: translateX(-50%) scale(0.8); }
+}
+
+/* Efek cahaya bergerak di atas */
+.alert-glow {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--japan-red), var(--japan-gold), transparent);
+    background-size: 200% 100%;
+    animation: scanline 2s linear infinite;
+}
+
+@keyframes scanline {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+.alert-content { padding: 20px 25px; }
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.alert-icon-wrapper {
+    display: grid;
+    place-items: center;
+    width: 45px; height: 45px;
+    background: rgba(211, 47, 47, 0.15);
+    border: 1px solid var(--japan-red);
+    border-radius: 50%;
+    color: var(--japan-red);
+    box-shadow: 0 0 15px rgba(211, 47, 47, 0.3);
+}
+
+.alert-icon { font-size: 20px; }
+
+.alert-titles { flex: 1; display: flex; flex-direction: column; text-align: left; }
+.alert-sender { color: var(--japan-gold); font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; font-family: 'Montserrat', sans-serif; }
+.alert-titles strong { color: #fff; font-size: 1.15rem; font-family: 'Noto Serif JP', serif; letter-spacing: 1px; }
+
+.close-alert { color: var(--muted); font-size: 28px; cursor: pointer; line-height: 1; transition: 0.3s; padding: 0 5px; }
+.close-alert:hover { color: var(--japan-red); transform: rotate(90deg); }
+
+.alert-body p { margin: 0; color: #E2E8F0; font-size: 0.95rem; line-height: 1.6; text-align: left; font-weight: 300; }
+
+/* Bar Timer menyusut 5 Detik */
+.alert-progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px;
+    background: var(--japan-red);
+    width: 100%;
+    animation: timerBar 5s linear forwards;
+}
+
+@keyframes timerBar {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}

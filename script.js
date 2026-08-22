@@ -107,7 +107,6 @@ function loadQuestion() {
     
     document.getElementById("questionKana").innerText = currentQuestion.kana;
     
-    // Menampilkan jenis huruf (Hiragana / Katakana) agar pemain tahu
     const typeLabel = document.getElementById("kanaType");
     if(typeLabel) {
         typeLabel.innerText = currentQuestion.type;
@@ -125,6 +124,7 @@ function updateQuizStats() {
     document.getElementById("bestScore").innerText = bestScore;
 }
 
+// FUNGSI CHECK ANSWER DENGAN TRIGGER LEADERBOARD
 function checkAnswer() {
     const userAnswer = document.getElementById("answerInput").value.toLowerCase().trim();
     const feedbackText = document.getElementById("feedback");
@@ -135,6 +135,10 @@ function checkAnswer() {
         bestScore = Math.max(bestScore, currentScore);
         localStorage.setItem("nihongoBestScore", bestScore);
         updateQuizStats();
+        
+        // PENGIRIM SINYAL SKOR BARU
+        window.dispatchEvent(new CustomEvent('updateLeaderboard', { detail: bestScore }));
+
         feedbackText.innerText = "ACCESS GRANTED. PERFECT! ⚡";
         feedbackText.style.color = "#00f3ff";
         feedbackText.style.textShadow = "0 0 10px #00f3ff";
@@ -149,7 +153,6 @@ function checkAnswer() {
     }
 }
 
-// Menjalankan kuis saat halaman dimuat
 window.onload = function() {
     setupInfoProfile();
     setupStudyPage();
@@ -159,7 +162,6 @@ window.onload = function() {
     }
 };
 
-// Deteksi tombol Enter
 document.getElementById("answerInput")?.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         checkAnswer();
@@ -167,17 +169,22 @@ document.getElementById("answerInput")?.addEventListener("keypress", function(ev
 });
 
 // ==========================================
-// LOGIKA LOGIN GLOBAL DI HALAMAN INDEX
+// LOGIKA LOGIN GLOBAL DI HALAMAN INDEX 
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const globalLoginOverlay = document.getElementById("globalLoginOverlay");
-    
-    // Hanya jalankan jika elemen overlay ada (artinya sedang di halaman index)
-    if (globalLoginOverlay) {
+    const guestPromptPopup = document.getElementById("guestPromptPopup");
+    const topLoginToggle = document.getElementById("topLoginToggle");
+    const topLoginText = document.getElementById("topLoginText");
+
+    if (globalLoginOverlay && guestPromptPopup) {
         const mainLoginUser = document.getElementById("mainLoginUser");
         const mainLoginCode = document.getElementById("mainLoginCode");
         const mainLoginBtn = document.getElementById("mainLoginBtn");
         const mainLoginError = document.getElementById("mainLoginError");
+        const closeLoginModal = document.getElementById("closeLoginModal");
+        const btnPromptNanti = document.getElementById("btnPromptNanti");
+        const btnPromptLogin = document.getElementById("btnPromptLogin");
 
         const accountCodes = {
             Umaedi: "UMAEDI2026",
@@ -186,14 +193,47 @@ document.addEventListener("DOMContentLoaded", () => {
             Fasya: "FASYA2026"
         };
 
-        // Cek status sesi saat halaman dimuat
-        if (sessionStorage.getItem("nihongoChatUser")) {
-            globalLoginOverlay.style.display = "none"; // Sudah login, sembunyikan pop-up
+        const activeUser = localStorage.getItem("nihongoChatUser");
+        
+        if (activeUser) {
+            globalLoginOverlay.style.display = "none";
+            guestPromptPopup.style.display = "none";
+            if(topLoginText) topLoginText.textContent = activeUser;
         } else {
-            globalLoginOverlay.style.display = "flex"; // Belum login, halangi dengan pop-up
+            globalLoginOverlay.style.display = "none";
+            guestPromptPopup.style.display = "flex";
         }
 
-        // Fungsi saat tombol Masuk diklik
+        btnPromptNanti.addEventListener("click", () => {
+            guestPromptPopup.style.display = "none";
+        });
+
+        btnPromptLogin.addEventListener("click", () => {
+            guestPromptPopup.style.display = "none";
+            globalLoginOverlay.style.display = "flex"; 
+        });
+
+        if (topLoginToggle) {
+            topLoginToggle.addEventListener("click", () => {
+                const currentUser = localStorage.getItem("nihongoChatUser");
+                if (currentUser) {
+                    if (confirm(`Anda login sebagai ${currentUser}.\nIngin keluar dari akun ini?`)) {
+                        localStorage.removeItem("nihongoChatUser"); 
+                        window.location.reload();
+                    }
+                } else {
+                    globalLoginOverlay.style.display = "flex";
+                    guestPromptPopup.style.display = "none";
+                }
+            });
+        }
+
+        if (closeLoginModal) {
+            closeLoginModal.addEventListener("click", () => {
+                globalLoginOverlay.style.display = "none";
+            });
+        }
+
         function handleMainLogin() {
             const user = mainLoginUser.value;
             const code = mainLoginCode.value.trim().toUpperCase();
@@ -204,9 +244,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (accountCodes[user] === code) {
-                // Login Sukses! Simpan di memori sementara browser
-                sessionStorage.setItem("nihongoChatUser", user);
-                globalLoginOverlay.style.display = "none"; // Buka gembok halaman
+                localStorage.setItem("nihongoChatUser", user);
+                globalLoginOverlay.style.display = "none";
+                if(topLoginText) topLoginText.textContent = user;
+                mainLoginError.textContent = "";
+
+                if (user === "Umaedi") {
+                    const adminBtn = document.getElementById("adminToggleBtn");
+                    if (adminBtn) adminBtn.style.display = "block";
+                }
+                
+                // Sinkronkan skor lama user yang baru login
+                const currentBest = Number(localStorage.getItem("nihongoBestScore") || 0);
+                if (currentBest > 0) window.dispatchEvent(new CustomEvent('updateLeaderboard', { detail: currentBest }));
+                
             } else {
                 mainLoginError.textContent = "Akun atau kode rahasia salah.";
             }

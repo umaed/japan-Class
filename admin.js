@@ -1,1 +1,156 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, query, limitToLast, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Konfigurasi Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBedu3Z7AMdD5dmaudzeCwxzkegpX5Qfvs",
+    authDomain: "nihongo-trinity.firebaseapp.com",
+    projectId: "nihongo-trinity",
+    databaseURL: "https://nihongo-trinity-default-rtdb.firebaseio.com",
+    storageBucket: "nihongo-trinity.firebasestorage.app",
+    messagingSenderId: "369587231010",
+    appId: "1:369587231010:web:6f69eb2516d660b9dfad7b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const announceRef = ref(db, "announcements");
+
+const adminToggleBtn = document.getElementById("adminToggleBtn");
+const adminModal = document.getElementById("adminModal");
+const closeAdminModal = document.getElementById("closeAdminModal");
+const announceTitle = document.getElementById("announceTitle");
+const announceMessage = document.getElementById("announceMessage");
+const sendAnnounceBtn = document.getElementById("sendAnnounceBtn");
+
+const globalAlert = document.getElementById("globalAlert");
+const alertTitle = document.getElementById("alertTitle");
+const alertMessage = document.getElementById("alertMessage");
+const closeAlert = document.getElementById("closeAlert");
+
+const alertSound = new Audio('https://actions.google.com/sounds/v1/alarms/message_alert_sound.ogg');
+
+// ==========================================
+// 1. LOGIKA KHUSUS UMAEDI (GOD MODE)
+// ==========================================
+if (localStorage.getItem("nihongoChatUser") === "Umaedi" && adminToggleBtn) {
+    adminToggleBtn.style.display = "block"; 
+}
+
+if (adminToggleBtn && adminModal) {
+    adminToggleBtn.addEventListener("click", () => {
+        adminModal.style.display = "flex";
+    });
+    closeAdminModal.addEventListener("click", () => {
+        adminModal.style.display = "none";
+    });
+    sendAnnounceBtn.addEventListener("click", () => {
+        const title = announceTitle.value.trim() || "PENGUMUMAN SISTEM";
+        const message = announceMessage.value.trim();
+        if (message !== "") {
+            push(announceRef, {
+                title: title, message: message, timestamp: Date.now(), sender: "Umaedi"
+            });
+            adminModal.style.display = "none";
+            announceTitle.value = "";
+            announceMessage.value = "";
+        } else {
+            alert("Pesan tidak boleh kosong!");
+        }
+    });
+}
+
+// ==========================================
+// 2. PENERIMA PESAN (BERLAKU UNTUK SEMUA ORANG)
+// ==========================================
+const recentAnnouncements = query(announceRef, limitToLast(1));
+let lastSeenId = sessionStorage.getItem("lastSeenAnnounce");
+let hideTimeout; 
+
+onChildAdded(recentAnnouncements, (snapshot) => {
+    const data = snapshot.val();
+    const key = snapshot.key;
+    if (lastSeenId !== key) {
+        if (alertTitle && alertMessage && globalAlert) {
+            globalAlert.classList.remove("hide-alert");
+            alertTitle.textContent = data.title;
+            alertMessage.textContent = data.message;
+            globalAlert.style.display = "block";
+            alertSound.play().catch(e => console.log("Mute otomatis oleh browser"));
+            sessionStorage.setItem("lastSeenAnnounce", key);
+            lastSeenId = key;
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                globalAlert.classList.add("hide-alert");
+                setTimeout(() => {
+                    globalAlert.style.display = "none";
+                    globalAlert.classList.remove("hide-alert");
+                }, 500); 
+            }, 5000);
+        }
+    }
+});
+
+if (closeAlert) {
+    closeAlert.addEventListener("click", () => {
+        clearTimeout(hideTimeout);
+        globalAlert.classList.add("hide-alert");
+        setTimeout(() => {
+            globalAlert.style.display = "none";
+            globalAlert.classList.remove("hide-alert");
+        }, 500);
+    });
+}
+
+// ==========================================
+// 3. LOGIKA LEADERBOARD (RANKING REAL-TIME)
+// ==========================================
+const leaderboardRef = ref(db, "leaderboard");
+const leaderboardList = document.getElementById("leaderboardList");
+
+if (leaderboardList) {
+    onValue(leaderboardRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const ranks = [];
+            
+            // Masukkan data ke array lalu urutkan skor dari besar ke kecil
+            for (let key in data) { ranks.push({ name: key, score: data[key] }); }
+            ranks.sort((a, b) => b.score - a.score);
+            
+            leaderboardList.innerHTML = "";
+            const medals = ["👑 Level: Sensei", "💻 Level: Senpai", "📜 Level: Kouhai", "🌱 Level: Novice"];
+            
+            ranks.forEach((user, index) => {
+                const medal = medals[index] || "🌱 Level: Novice";
+                const rankClass = `rank-${index + 1 > 4 ? 4 : index + 1}`;
+                
+                // Panggil file gambar sesuai nama (ubah ke huruf kecil agar cocok dengan file)
+                const imgName = user.name.toLowerCase();
+                const imagePath = `gambar/${imgName}.png`;
+                const initial = user.name.charAt(0).toUpperCase();
+                
+                const li = document.createElement("li");
+                li.className = rankClass;
+                li.innerHTML = `
+                    <div class="rank-pic" style="background: rgba(255,255,255,0.05); display: grid; place-items: center; overflow: hidden; border-radius: 50%;">
+                        <!-- Jika gambar transparan, akan ada background putih. Jika gagal load, berubah jadi Inisial -->
+                        <img src="${imagePath}" alt="${initial}" 
+                             style="width: 100%; height: 100%; object-fit: cover; background-color: #fff;" 
+                             onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\\'color:#fff; font-size:20px; font-weight:bold; font-family:Noto Serif JP, serif;\\'>${initial}</span>';">
+                    </div>
+                    <div class="rank-info" style="flex: 1;">
+                        <strong>${user.name === "Rifki" ? "Rifki (Swing)" : user.name}</strong>
+                        <p>${medal}</p>
+                    </div>
+                    <div style="font-size: 1.3rem; font-weight: 700; color: var(--japan-gold); font-family: 'Montserrat', sans-serif;">
+                        ${user.score}
+                    </div>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        } else {
+            leaderboardList.innerHTML = `<li style="text-align:center; justify-content:center; color: var(--muted);">Belum ada data skor.</li>`;
+        }
+    });
+}
