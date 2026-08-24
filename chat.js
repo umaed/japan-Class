@@ -25,6 +25,7 @@ const isCore = currentUser && coreMembers.includes(currentUser.toLowerCase());
 
 let currentRoom = null; 
 let activeChatListener = null;
+let activeWipeListener = null; 
 let sessionLastRead = Date.now();
 let unreadDividerAdded = false;
 const pendingMessages = [];
@@ -97,10 +98,10 @@ function listenRoomPreview(roomType) {
 
             if (lastMsgData) {
                 let msgText = lastMsgData.image ? "📷 Mengirim foto" : lastMsgData.message;
-                if (lastMsgData.isCountdown) msgText = "⚠️ Pembersihan sistem dimulai...";
+                if (lastMsgData.isCountdown) msgText = "⚠️ Peringatan pembersihan sistem dimulai...";
                 if (lastMsgData.isPostClear) msgText = "✅ Ruang obrolan bersih.";
 
-                const isMe = lastMsgData.name === currentUser ? "Anda: " : (lastMsgData.name === "SYSTEM" ? "Sistem: " : `${lastMsgData.name}: `);
+                const isMe = lastMsgData.name === currentUser ? "Anda: " : (lastMsgData.name === "SYSTEM" ? "System: " : `${lastMsgData.name}: `);
                 lastMsgEl.textContent = isMe + msgText;
                 
                 const dateObj = new Date(lastMsgData.timestamp);
@@ -156,12 +157,23 @@ window.openRoom = function(type) {
     localStorage.setItem("lastRead_" + type, Date.now());
 
     if (activeChatListener) activeChatListener(); 
+    if (activeWipeListener) activeWipeListener(); 
 
+    // Aliran Teks Real-Time
     activeChatListener = onChildAdded(ref(db, dbRefName), (snapshot) => {
         const data = snapshot.val();
         const msgKey = snapshot.key; 
         pendingMessages.push({ data, key: msgKey });
         renderMessage(data, msgKey);
+    });
+
+    // PENDETEKSI PEMUSNAHAN MUTLAK (Sapu Jagat Layar)
+    activeWipeListener = onValue(ref(db, dbRefName), (snapshot) => {
+        if (!snapshot.exists()) {
+            if (chatBox) chatBox.replaceChildren();
+            pendingMessages.length = 0;
+            unreadDividerAdded = false;
+        }
     });
 };
 
@@ -178,6 +190,7 @@ if (isCore) {
             chatRoomView.style.display = "none";
             chatListView.style.display = "flex";
             if (activeChatListener) { activeChatListener(); activeChatListener = null; }
+            if (activeWipeListener) { activeWipeListener(); activeWipeListener = null; }
         });
     }
 } else {
@@ -246,19 +259,19 @@ function renderMessage(data, msgKey) {
     const senderName = data.name || "Unknown";
 
     // ==========================================
-    // 1. SISTEM PESAN BOT (HACKER) & HANGUS OTOMATIS
+    // 1. SISTEM PERINGATAN (SYSTEM ALERT)
     // ==========================================
     if (senderName === "SYSTEM") {
         
-        // JIKA INI PESAN POST-CLEAR (BOT SELESAI)
+        // JIKA INI PESAN POST-CLEAR (Sistem Selesai)
         if (data.isPostClear) {
             
-            // JURUS SAPU JAGAT: Bersihkan semua elemen obrolan & foto di layar seketika!
+            // JURUS SAPU JAGAT: Bersihkan layar seketika
             if (chatBox) chatBox.replaceChildren();
             pendingMessages.length = 0;
             unreadDividerAdded = false;
 
-            // Jika peringatan ini sudah pernah hangus di HP user, abaikan.
+            // Jika peringatan ini sudah hangus, abaikan.
             if (localStorage.getItem("hidden_sys_" + msgKey)) return;
 
             const msgDiv = document.createElement("div");
@@ -266,9 +279,9 @@ function renderMessage(data, msgKey) {
             msgDiv.innerHTML = `
                 <div class="msg-header">
                     <div class="message-avatar" style="background:#131921; border: 1px solid #4CAF50; display:grid; place-items:center;">
-                        <span style="font-size:12px; color:#4CAF50;">🤖</span>
+                        <span style="font-size:12px;">✅</span>
                     </div>
-                    <strong>SYSTEM <span class="tag-core" style="background:#4CAF50; color:#fff; border-color:#4CAF50;">✅ SELESAI</span></strong>
+                    <strong>SYSTEM <span class="tag-core" style="background:#4CAF50; color:#fff; border-color:#4CAF50;">ACTION COMPLETE</span></strong>
                 </div>
                 <div class="msg-content">
                     <span>${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span></span>
@@ -277,7 +290,7 @@ function renderMessage(data, msgKey) {
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Tandai sudah dibaca & set timer 60 detik untuk MENGUAPKAN pesannya
+            // HANGUS OTOMATIS: 60 Detik setelah dirender/dibaca di layar
             localStorage.setItem("hidden_sys_" + msgKey, "true");
             setTimeout(() => {
                 msgDiv.style.transition = "opacity 1.5s ease, transform 1.5s ease";
@@ -288,7 +301,7 @@ function renderMessage(data, msgKey) {
             return;
         }
 
-        // JIKA INI PESAN COUNTDOWN INTRUDER (BOT HAPUS)
+        // JIKA INI PESAN COUNTDOWN
         if (data.isCountdown) {
             let timeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
             if (timeLeft <= 0) return; // Jika telat masuk, abaikan saja karena layar bakal disapu isPostClear
@@ -297,13 +310,13 @@ function renderMessage(data, msgKey) {
             msgDiv.className = `msg is-other`; 
             msgDiv.innerHTML = `
                 <div class="msg-header">
-                    <div class="message-avatar" style="background:#000; border: 1px solid #00f3ff; display:grid; place-items:center;">
-                        <span style="font-size:12px;">👾</span>
+                    <div class="message-avatar" style="background:#131921; border: 1px solid #ff3b30; display:grid; place-items:center;">
+                        <span style="font-size:12px;">⚠️</span>
                     </div>
-                    <strong>SYSTEM <span class="tag-founder" style="background:#000; color:#00f3ff; border-color:#00f3ff;">⚠️ ADMIN BOT</span></strong>
+                    <strong>SYSTEM <span class="tag-founder" style="background:#ff3b30; color:#fff; border-color:#ff3b30;">SYSTEM ALERT</span></strong>
                 </div>
                 <div class="msg-content">
-                    <span id="countdownText_${msgKey}" style="font-family:monospace;"><em>${data.message}</em> <strong style="color:#ff3b30; font-size:14px;">${timeLeft} detik</strong>.</span>
+                    <span id="countdownText_${msgKey}" style="font-family:monospace; color: #ff3b30;"><em>${data.message}</em> <strong style="font-size:16px;">${timeLeft} detik</strong>.</span>
                 </div>
             `;
             chatBox.appendChild(msgDiv);
@@ -314,7 +327,7 @@ function renderMessage(data, msgKey) {
                     let newTimeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
                     if (newTimeLeft > 0) {
                         const el = document.getElementById(`countdownText_${msgKey}`);
-                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:14px;">${newTimeLeft} detik</strong>.`;
+                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="font-size:16px;">${newTimeLeft} detik</strong>.`;
                     } else {
                         clearInterval(timer);
                     }

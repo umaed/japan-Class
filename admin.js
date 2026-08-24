@@ -253,14 +253,14 @@ const clearCoreBtn = document.getElementById("clearCoreBtn");
 
 if (currentUser === "Umaedi" && adminToggleBtn) adminToggleBtn.style.display = "block"; 
 
-// Layar Pengunci Khusus Admin (Mencegah admin kabur saat proses pembersihan berlangsung)
+// Layar Pengunci Khusus Admin
 function showAdminWipeOverlay() {
     const overlay = document.createElement("div");
     overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:monospace; text-align:center; padding:20px; backdrop-filter:blur(10px);";
     overlay.innerHTML = `
         <div style="font-size:50px; margin-bottom:20px;">⚠️</div>
         <h2 style="color:#ff3b30; margin:0 0 10px; font-size:1.5rem;">SYSTEM OVERRIDE IN PROGRESS</h2>
-        <p style="color:#E2E8F0; margin-bottom:20px;">Menyusup ke database dan memusnahkan riwayat obrolan...</p>
+        <p style="color:#E2E8F0; margin-bottom:20px;">Mengunci database dan memusnahkan riwayat obrolan...</p>
         <h1 id="adminCountdown" style="font-size:5rem; margin:0; color:#D4AF37;">10</h1>
         <p style="color:#ff3b30; margin-top:30px; font-weight:bold; max-width:80%; line-height:1.5;">MOHON JANGAN TUTUP ATAU PINDAH HALAMAN INI SELAMA PROSES BERLANGSUNG!</p>
     `;
@@ -291,26 +291,26 @@ if (adminToggleBtn && adminModal) {
         } else alert("Pesan tidak boleh kosong!");
     });
     
-    // PEMICU BOT PEMBERSIH PUBLIC LOUNGE
+    // PEMICU SYSTEM ALERT PUBLIC LOUNGE
     if (clearPublicBtn) {
         clearPublicBtn.addEventListener("click", () => {
-            if (confirm("YAKIN HAPUS PUBLIC LOUNGE? Bot akan menyusup dan memulai hitung mundur 10 detik di layar semua orang.")) {
+            if (confirm("YAKIN HAPUS PUBLIC LOUNGE? Sistem akan memberikan peringatan dan hitung mundur 10 detik di layar member.")) {
                 adminModal.style.display = "none";
                 const dbRef = ref(db, "messages_public");
                 
-                const overlay = showAdminWipeOverlay(); // Kunci Layar Umaedi
+                const overlay = showAdminWipeOverlay(); 
                 
-                // Memicu Bot Hacker Masuk
+                // Memicu Sistem Peringatan Masuk
                 push(dbRef, { 
                     name: "SYSTEM", 
-                    message: "Pesan di ruang obrolan ini akan dihapus oleh admin dalam hitung mundur", 
+                    message: "Seluruh pesan akan dihapus oleh admin dalam hitung mundur", 
                     isCountdown: true, 
                     timestamp: Date.now() 
                 });
                 
-                // Eksekutor Penghapus Database (Jeda 10.5 Detik agar pas)
+                // Hancurkan Database
                 setTimeout(async () => {
-                    await remove(dbRef); // Membakar habis database
+                    await remove(dbRef); 
                     await push(dbRef, {
                         name: "SYSTEM",
                         message: "Ruang obrolan telah dibersihkan secara permanen oleh Admin.",
@@ -323,10 +323,10 @@ if (adminToggleBtn && adminModal) {
         });
     }
 
-    // PEMICU BOT PEMBERSIH TRINITY CORE
+    // PEMICU SYSTEM ALERT TRINITY CORE
     if (clearCoreBtn) {
         clearCoreBtn.addEventListener("click", () => {
-            if (confirm("YAKIN HAPUS TRINITY CORE? Bot akan menyusup dan memulai hitung mundur 10 detik.")) {
+            if (confirm("YAKIN HAPUS TRINITY CORE? Sistem akan memulai hitung mundur 10 detik.")) {
                 adminModal.style.display = "none";
                 const dbRef = ref(db, "messages");
 
@@ -334,7 +334,7 @@ if (adminToggleBtn && adminModal) {
 
                 push(dbRef, { 
                     name: "SYSTEM", 
-                    message: "Pesan di ruang obrolan ini akan dihapus oleh admin dalam hitung mundur", 
+                    message: "Seluruh pesan akan dihapus oleh admin dalam hitung mundur", 
                     isCountdown: true, 
                     timestamp: Date.now() 
                 });
@@ -448,7 +448,6 @@ if (leaderboardList) {
 // 5. NOTIFIKASI PESAN BELUM DIBACA
 // ==========================================
 const msgBadge = document.getElementById("msgBadge");
-const chatMessagesRef = ref(db, "messages");
 
 if (currentUser && msgBadge) {
     const coreMembers = ["umaedi", "iqbal", "rifki", "fasya"];
