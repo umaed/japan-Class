@@ -26,19 +26,115 @@ const isCore = currentUser && coreMembers.includes(currentUser.toLowerCase());
 let currentRoom = null; 
 let activeChatListener = null;
 let activeWipeListener = null; 
+let activeTypingListener = null;
 let sessionLastRead = Date.now();
 let unreadDividerAdded = false;
 const pendingMessages = [];
 let currentOnlineUsers = []; 
+
+let activeReplyData = null;
+const replyPreviewArea = document.getElementById("replyPreviewArea");
+const replyPreviewName = document.getElementById("replyPreviewName");
+const replyPreviewText = document.getElementById("replyPreviewText");
+const cancelReplyBtn = document.getElementById("cancelReplyBtn");
 
 const chatListView = document.getElementById("chatListView");
 const chatRoomView = document.getElementById("chatRoomView");
 const backToListBtn = document.getElementById("backToListBtn");
 const chatImageUpload = document.getElementById("chatImageUpload");
 const sendImageBtn = document.getElementById("sendImageBtn");
+const recordAudioBtn = document.getElementById("recordAudioBtn"); // Tombol Voice Note
 
-if (isCore && sendImageBtn) sendImageBtn.style.display = "block"; 
+const typingIndicatorContainer = document.createElement("div");
+typingIndicatorContainer.className = "typing-indicator-container";
+typingIndicatorContainer.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div><span id="typingUserNameText">Seseorang sedang mengetik...</span>`;
+let typingTimeout = null;
 
+// Tampilkan Fitur Eksklusif Jika Founder
+if (isCore) {
+    if(sendImageBtn) sendImageBtn.style.display = "block"; 
+    if(recordAudioBtn) recordAudioBtn.style.display = "block";
+}
+
+if (cancelReplyBtn) cancelReplyBtn.addEventListener("click", cancelReply);
+
+function cancelReply() {
+    activeReplyData = null;
+    if (replyPreviewArea) replyPreviewArea.style.display = "none";
+}
+
+function triggerReply(name, text) {
+    activeReplyData = { name, text };
+    if (replyPreviewArea) {
+        replyPreviewArea.style.display = "flex";
+        replyPreviewName.textContent = name;
+        replyPreviewText.textContent = text;
+    }
+    if (chatInput) chatInput.focus();
+}
+
+// ==========================================
+// FITUR PEREKAM SUARA (VOICE NOTE)
+// ==========================================
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+if (recordAudioBtn) {
+    recordAudioBtn.addEventListener("click", async () => {
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // webm sangat ringan
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        const base64Audio = reader.result;
+                        if (confirm("Kirim rekaman suara ini?")) {
+                            const dbRefName = currentRoom === "core" ? "messages" : "messages_public";
+                            let payload = { name: currentUser, message: "", audio: base64Audio, timestamp: Date.now() };
+                            if (activeReplyData) payload.replyTo = activeReplyData;
+                            push(ref(db, dbRefName), payload);
+                            cancelReply();
+                        }
+                    };
+                    reader.readAsDataURL(audioBlob);
+                    
+                    // Matikan mic agar tidak bocor
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                recordAudioBtn.style.color = "#D32F2F"; // Berubah merah saat merekam
+                recordAudioBtn.style.animation = "pulseGlow 1s infinite";
+                if(chatInput) chatInput.placeholder = "Merekam suara... (Klik mic lagi untuk stop)";
+            } catch (err) {
+                alert("Gagal mengakses mikrofon. Pastikan Anda memberi izin akses mic.");
+            }
+        } else {
+            // STOP Merekam
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+            isRecording = false;
+            recordAudioBtn.style.color = "#8B9BB4"; // Kembali abu-abu
+            recordAudioBtn.style.animation = "none";
+            if(chatInput) chatInput.placeholder = "Tulis pesan ke grup...";
+        }
+    });
+}
+
+// ==========================================
+// KIRIM GAMBAR (MENDUKUNG REPLY)
+// ==========================================
 if (sendImageBtn && chatImageUpload) {
     sendImageBtn.addEventListener("click", () => chatImageUpload.click());
     chatImageUpload.addEventListener("change", (e) => {
@@ -61,7 +157,10 @@ if (sendImageBtn && chatImageUpload) {
 
                 if (confirm("Kirim gambar ini ke grup?")) {
                     const dbRefName = currentRoom === "core" ? "messages" : "messages_public";
-                    push(ref(db, dbRefName), { name: currentUser, message: "", image: base64Img, timestamp: Date.now() });
+                    let payload = { name: currentUser, message: "", image: base64Img, timestamp: Date.now() };
+                    if (activeReplyData) payload.replyTo = activeReplyData;
+                    push(ref(db, dbRefName), payload);
+                    cancelReply();
                 }
             };
             img.src = event.target.result;
@@ -79,10 +178,7 @@ function listenRoomPreview(roomType) {
         if (snapshot.exists()) {
             let unreadCount = 0;
             let lastMsgData = null;
-            let lastRead = Number(localStorage.getItem("lastRead_" + roomType));
-            
-            if (!lastRead && roomType === "core") lastRead = Number(localStorage.getItem("lastReadMessageTime")) || Date.now();
-            else if (!lastRead) lastRead = Date.now();
+            let lastRead = Number(localStorage.getItem("lastRead_" + roomType)) || Date.now();
 
             snapshot.forEach((childSnap) => {
                 const msg = childSnap.val();
@@ -97,8 +193,9 @@ function listenRoomPreview(roomType) {
             const badgeEl = document.getElementById(roomType === "core" ? "badgeCore" : "badgePublic");
 
             if (lastMsgData) {
-                let msgText = lastMsgData.image ? "📷 Mengirim foto" : lastMsgData.message;
-                if (lastMsgData.isCountdown) msgText = "⚠️ Peringatan pembersihan sistem dimulai...";
+                // Modifikasi preview teks kalau ada VN
+                let msgText = lastMsgData.image ? "📷 Mengirim foto" : (lastMsgData.audio ? "🎤 Voice Note" : lastMsgData.message);
+                if (lastMsgData.isCountdown) msgText = "⚠️ Pembersihan sistem dimulai...";
                 if (lastMsgData.isPostClear) msgText = "✅ Ruang obrolan bersih.";
 
                 const isMe = lastMsgData.name === currentUser ? "Anda: " : (lastMsgData.name === "SYSTEM" ? "System: " : `${lastMsgData.name}: `);
@@ -124,6 +221,8 @@ function listenRoomPreview(roomType) {
 
 window.openRoom = function(type) {
     currentRoom = type;
+    cancelReply(); 
+    
     if(chatListView) chatListView.style.display = "none";
     if(chatRoomView) chatRoomView.style.display = "flex";
     
@@ -132,6 +231,7 @@ window.openRoom = function(type) {
     const roomIcon = document.getElementById("roomIcon");
     const coreMemberAvatarList = document.getElementById("coreMemberAvatarList");
     const dbRefName = type === "core" ? "messages" : "messages_public";
+    const typingRefName = type === "core" ? "typing_core" : "typing_public";
 
     if (type === "core") {
         if(roomLabel) roomLabel.textContent = "TRINITY CORE"; 
@@ -151,15 +251,14 @@ window.openRoom = function(type) {
 
     renderOnlineUsers();
 
-    let lastReadVal = Number(localStorage.getItem("lastRead_" + type));
-    if(!lastReadVal && type === "core") lastReadVal = Number(localStorage.getItem("lastReadMessageTime"));
-    sessionLastRead = lastReadVal || Date.now();
+    let lastReadVal = Number(localStorage.getItem("lastRead_" + type)) || Date.now();
+    sessionLastRead = lastReadVal;
     localStorage.setItem("lastRead_" + type, Date.now());
 
     if (activeChatListener) activeChatListener(); 
     if (activeWipeListener) activeWipeListener(); 
+    if (activeTypingListener) activeTypingListener();
 
-    // Aliran Teks Real-Time
     activeChatListener = onChildAdded(ref(db, dbRefName), (snapshot) => {
         const data = snapshot.val();
         const msgKey = snapshot.key; 
@@ -167,12 +266,36 @@ window.openRoom = function(type) {
         renderMessage(data, msgKey);
     });
 
-    // PENDETEKSI PEMUSNAHAN MUTLAK (Sapu Jagat Layar)
     activeWipeListener = onValue(ref(db, dbRefName), (snapshot) => {
         if (!snapshot.exists()) {
             if (chatBox) chatBox.replaceChildren();
             pendingMessages.length = 0;
             unreadDividerAdded = false;
+        }
+    });
+
+    activeTypingListener = onValue(ref(db, typingRefName), (snapshot) => {
+        if (!chatBox) return;
+        let typingUsers = [];
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            typingUsers = Object.keys(data).filter(name => name !== currentUser && data[name] === true);
+        }
+
+        if (typingUsers.length > 0) {
+            const displayNames = typingUsers.map(name => {
+                const profile = window.userProfiles ? window.userProfiles[name] : null;
+                return profile && profile.displayName ? profile.displayName : name;
+            });
+            const textEl = typingIndicatorContainer.querySelector("#typingUserNameText");
+            if (displayNames.length === 1) textEl.textContent = `${displayNames[0]} sedang mengetik...`;
+            else textEl.textContent = `${displayNames[0]} dan ${displayNames.length - 1} lainnya sedang mengetik...`;
+
+            typingIndicatorContainer.style.display = "flex";
+            chatBox.appendChild(typingIndicatorContainer);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } else {
+            typingIndicatorContainer.style.display = "none";
         }
     });
 };
@@ -191,6 +314,8 @@ if (isCore) {
             chatListView.style.display = "flex";
             if (activeChatListener) { activeChatListener(); activeChatListener = null; }
             if (activeWipeListener) { activeWipeListener(); activeWipeListener = null; }
+            if (activeTypingListener) { activeTypingListener(); activeTypingListener = null; }
+            cancelReply();
         });
     }
 } else {
@@ -258,68 +383,38 @@ function renderMessage(data, msgKey) {
     if (!currentUser || !chatBox || !currentRoom) return;
     const senderName = data.name || "Unknown";
 
-    // ==========================================
-    // 1. SISTEM PERINGATAN (SYSTEM ALERT)
-    // ==========================================
     if (senderName === "SYSTEM") {
-        
-        // JIKA INI PESAN POST-CLEAR (Sistem Selesai)
-        if (data.isPostClear) {
-            
-            // JURUS SAPU JAGAT: Bersihkan layar seketika
-            if (chatBox) chatBox.replaceChildren();
-            pendingMessages.length = 0;
-            unreadDividerAdded = false;
+        if (data.isPostClear && localStorage.getItem("hidden_sys_" + msgKey)) return;
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `msg is-other`; 
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "msg-header";
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        const sender = document.createElement("strong");
+        sender.textContent = "SYSTEM";
+        const badge = document.createElement("span");
+        badge.className = "tag-founder"; 
 
-            // Jika peringatan ini sudah hangus, abaikan.
-            if (localStorage.getItem("hidden_sys_" + msgKey)) return;
-
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `msg is-other`; 
-            msgDiv.innerHTML = `
-                <div class="msg-header">
-                    <div class="message-avatar" style="background:#131921; border: 1px solid #4CAF50; display:grid; place-items:center;">
-                        <span style="font-size:12px;">✅</span>
-                    </div>
-                    <strong>SYSTEM <span class="tag-core" style="background:#4CAF50; color:#fff; border-color:#4CAF50;">ACTION COMPLETE</span></strong>
-                </div>
-                <div class="msg-content">
-                    <span>${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span></span>
-                </div>
-            `;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // HANGUS OTOMATIS: 60 Detik setelah dirender/dibaca di layar
-            localStorage.setItem("hidden_sys_" + msgKey, "true");
-            setTimeout(() => {
-                msgDiv.style.transition = "opacity 1.5s ease, transform 1.5s ease";
-                msgDiv.style.opacity = "0";
-                msgDiv.style.transform = "scale(0.9)";
-                setTimeout(() => { if (msgDiv.parentNode) msgDiv.remove(); }, 1500);
-            }, 60000); 
-            return;
-        }
-
-        // JIKA INI PESAN COUNTDOWN
         if (data.isCountdown) {
             let timeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
-            if (timeLeft <= 0) return; // Jika telat masuk, abaikan saja karena layar bakal disapu isPostClear
-
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `msg is-other`; 
-            msgDiv.innerHTML = `
-                <div class="msg-header">
-                    <div class="message-avatar" style="background:#131921; border: 1px solid #ff3b30; display:grid; place-items:center;">
-                        <span style="font-size:12px;">⚠️</span>
-                    </div>
-                    <strong>SYSTEM <span class="tag-founder" style="background:#ff3b30; color:#fff; border-color:#ff3b30;">SYSTEM ALERT</span></strong>
-                </div>
-                <div class="msg-content">
-                    <span id="countdownText_${msgKey}" style="font-family:monospace; color: #ff3b30;"><em>${data.message}</em> <strong style="font-size:16px;">${timeLeft} detik</strong>.</span>
-                </div>
-            `;
+            if (timeLeft <= 0) return; 
+            avatar.style.background = "#000"; avatar.style.border = "1px solid #00f3ff"; avatar.innerHTML = `<span style="font-size:14px;">👾</span>`; 
+            badge.style.background = "#000"; badge.style.color = "#00f3ff"; badge.style.borderColor = "#00f3ff"; badge.innerText = "⚠️ INTRUDER BOT"; 
+            sender.appendChild(badge);
+            headerDiv.append(avatar, sender);
+            
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "msg-content";
+            const textSpan = document.createElement("span");
+            textSpan.id = `countdownText_${msgKey}`;
+            textSpan.style.fontFamily = "monospace"; 
+            textSpan.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:16px;">${timeLeft} detik</strong>.`;
+            contentDiv.appendChild(textSpan);
+            msgDiv.append(headerDiv, contentDiv);
             chatBox.appendChild(msgDiv);
+            
+            if (typingIndicatorContainer.parentNode === chatBox) chatBox.appendChild(typingIndicatorContainer);
             chatBox.scrollTop = chatBox.scrollHeight;
 
             if (timeLeft > 0) {
@@ -327,19 +422,39 @@ function renderMessage(data, msgKey) {
                     let newTimeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
                     if (newTimeLeft > 0) {
                         const el = document.getElementById(`countdownText_${msgKey}`);
-                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="font-size:16px;">${newTimeLeft} detik</strong>.`;
-                    } else {
-                        clearInterval(timer);
-                    }
+                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:16px;">${newTimeLeft} detik</strong>.`;
+                    } else { clearInterval(timer); }
                 }, 1000);
             }
             return;
         }
+
+        if (data.isPostClear) {
+            avatar.style.background = "#131921"; avatar.innerHTML = `<span style="font-size:14px; color:#4CAF50;">🤖</span>`; 
+            badge.className = "tag-core"; badge.style.background = "#4CAF50"; badge.style.color = "#fff"; badge.style.borderColor = "#4CAF50"; badge.innerText = "✅ SELESAI"; 
+            sender.appendChild(badge);
+            headerDiv.append(avatar, sender);
+
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "msg-content";
+            const message = document.createElement("span");
+            message.innerHTML = `${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span>`;
+            contentDiv.appendChild(message);
+
+            msgDiv.append(headerDiv, contentDiv);
+            chatBox.appendChild(msgDiv);
+            if (typingIndicatorContainer.parentNode === chatBox) chatBox.appendChild(typingIndicatorContainer);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            localStorage.setItem("hidden_sys_" + msgKey, "true"); 
+            setTimeout(() => {
+                msgDiv.style.transition = "opacity 1.5s ease, transform 1.5s ease";
+                msgDiv.style.opacity = "0"; msgDiv.style.transform = "scale(0.9)";
+                setTimeout(() => { if (msgDiv.parentNode) msgDiv.remove(); }, 1500);
+            }, 60000); 
+            return;
+        }
     }
 
-    // ==========================================
-    // 2. PESAN CHAT NORMAL
-    // ==========================================
     if (!unreadDividerAdded && data.timestamp > sessionLastRead && senderName !== currentUser) {
         const divider = document.createElement("div");
         divider.className = "chat-day unread-divider";
@@ -370,16 +485,20 @@ function renderMessage(data, msgKey) {
     sender.textContent = displayName;
     const rawName = senderName.toLowerCase();
     
-    if (rawName === "umaedi") {
-        sender.innerHTML += `<span class="tag-founder">👑 FOUNDER</span>`;
-    } else if (coreMembers.includes(rawName)) {
-        sender.innerHTML += `<span class="tag-core">⭐ CORE TEAM</span>`;
-    }
+    if (rawName === "umaedi") sender.innerHTML += `<span class="tag-founder">👑 FOUNDER</span>`;
+    else if (coreMembers.includes(rawName)) sender.innerHTML += `<span class="tag-core">⭐ CORE TEAM</span>`;
     
     headerDiv.append(avatar, sender);
 
     const contentDiv = document.createElement("div");
     contentDiv.className = "msg-content";
+
+    if (data.replyTo) {
+        const replyDiv = document.createElement("div");
+        replyDiv.className = "msg-reply-box";
+        replyDiv.innerHTML = `<strong>${data.replyTo.name}</strong><p>${data.replyTo.text}</p>`;
+        contentDiv.appendChild(replyDiv);
+    }
     
     if (data.message) {
         const message = document.createElement("span");
@@ -397,7 +516,6 @@ function renderMessage(data, msgKey) {
         imgEl.style.marginTop = data.message ? "8px" : "0";
         imgEl.style.cursor = "zoom-in";
         imgEl.style.border = "1px solid rgba(255,255,255,0.1)";
-        
         imgEl.onclick = () => {
             const w = window.open("");
             w.document.write(`<body style="margin:0; background:#0b0f14; display:grid; place-items:center; height:100vh;"><img src="${data.image}" style="max-width:100%; max-height:100vh; object-fit:contain;"></body>`);
@@ -405,11 +523,64 @@ function renderMessage(data, msgKey) {
         contentDiv.appendChild(imgEl);
     }
 
+    // RENDER AUDIO (Jika ada)
+    if (data.audio) {
+        const audioEl = document.createElement("audio");
+        audioEl.controls = true;
+        audioEl.src = data.audio;
+        audioEl.style.marginTop = data.message ? "8px" : "0";
+        audioEl.style.width = "220px";
+        audioEl.style.height = "35px";
+        audioEl.style.outline = "none";
+        
+        // Custom styling audio bawaan browser agar agak nyambung warnanya (Hack ringan)
+        audioEl.style.filter = "sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%)";
+        
+        contentDiv.appendChild(audioEl);
+    }
+
     msgDiv.append(headerDiv, contentDiv);
     chatBox.appendChild(msgDiv);
+    
+    if (typingIndicatorContainer.parentNode === chatBox) chatBox.appendChild(typingIndicatorContainer);
     chatBox.scrollTop = chatBox.scrollHeight;
-
     localStorage.setItem("lastRead_" + currentRoom, Date.now());
+
+    let startX = 0; let startY = 0; let isSwiping = false;
+
+    msgDiv.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        isSwiping = true; msgDiv.style.transition = 'none'; 
+    }, {passive: true});
+
+    msgDiv.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        let currentX = e.touches[0].clientX; let currentY = e.touches[0].clientY;
+        let diffX = currentX - startX; let diffY = Math.abs(currentY - startY);
+        
+        if (diffY > Math.abs(diffX) && diffX < 15) {
+            isSwiping = false; msgDiv.style.transform = `translateX(0px)`; return;
+        }
+
+        if (diffX > 0 && diffX < 60) { msgDiv.style.transform = `translateX(${diffX}px)`; }
+    }, {passive: true});
+
+    msgDiv.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        let endX = e.changedTouches[0].clientX; let diffX = endX - startX;
+        msgDiv.style.transition = 'transform 0.2s ease-out';
+        msgDiv.style.transform = `translateX(0px)`; 
+        if (diffX > 40) { 
+            let repText = data.image ? "📷 Gambar/Foto" : (data.audio ? "🎤 Voice Note" : data.message);
+            triggerReply(displayName, repText);
+        }
+        isSwiping = false;
+    });
+
+    msgDiv.addEventListener('dblclick', () => {
+        let repText = data.image ? "📷 Gambar/Foto" : (data.audio ? "🎤 Voice Note" : data.message);
+        triggerReply(displayName, repText);
+    });
 }
 
 function sendMessage() {
@@ -418,14 +589,38 @@ function sendMessage() {
     const chatRef = ref(db, dbRefName);
     const text = chatInput.value.trim();
     if (text !== "" && currentUser) {
-        push(chatRef, { name: currentUser, message: text, timestamp: Date.now() });
+        let payload = { name: currentUser, message: text, timestamp: Date.now() };
+        if (activeReplyData) payload.replyTo = activeReplyData;
+        
+        push(chatRef, payload);
         chatInput.value = ""; 
+        cancelReply(); 
+        
+        set(ref(db, `typing_${currentRoom}/${currentUser}`), null);
     }
 }
 
 setLoginState(currentUser);
 
-if(sendBtn && chatInput) {
+if(chatInput) {
+    chatInput.addEventListener("input", () => {
+        if (!currentRoom || !currentUser) return;
+        const typingRef = ref(db, `typing_${currentRoom}/${currentUser}`);
+        
+        if (chatInput.value.trim().length > 0) {
+            set(typingRef, true); 
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => { set(typingRef, null); }, 3000);
+        } else {
+            set(typingRef, null); 
+        }
+    });
+
+    chatInput.addEventListener("keypress", (e) => { 
+        if (e.key === "Enter") sendMessage(); 
+    });
+}
+
+if(sendBtn) {
     sendBtn.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 }

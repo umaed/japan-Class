@@ -84,12 +84,26 @@
                 <div class="chat-day">HARI INI</div>
             </div>
             
+<!-- ========================================== -->
+            <!-- FITUR PREVIEW BALASAN -->
+            <!-- ========================================== -->
+            <div id="replyPreviewArea" class="reply-preview-area" style="display: none;">
+                <div class="reply-preview-content">
+                    <strong id="replyPreviewName">Nama</strong>
+                    <p id="replyPreviewText">Pesan...</p>
+                </div>
+                <button type="button" id="cancelReplyBtn" class="cancel-reply-btn" aria-label="Batal Balas">×</button>
+            </div>
+            
             <div class="chat-input-area">
                 <button class="chat-emoji" type="button" aria-label="Pilih emoji">☺</button>
                 
-                <!-- FITUR KIRIM GAMBAR (Khusus Core) -->
+                <!-- FITUR EKSKLUSIF FOUNDER: FOTO & VOICE NOTE -->
                 <input type="file" id="chatImageUpload" accept="image/*" style="display: none;">
                 <button id="sendImageBtn" type="button" style="display: none; background: transparent; color: #8B9BB4; font-size: 20px; border: none; cursor: pointer; padding: 0 5px; transition: 0.3s;" aria-label="Kirim Gambar">📷</button>
+                
+                <!-- Tombol Mic (Ditahan untuk merekam) -->
+                <button id="recordAudioBtn" type="button" style="display: none; background: transparent; color: #8B9BB4; font-size: 20px; border: none; cursor: pointer; padding: 0 5px; transition: 0.3s;" aria-label="Tahan untuk merekam">🎤</button>
                 
                 <input type="text" id="chatInput" placeholder="Tulis pesan ke grup..." disabled>
                 <button id="sendBtn" type="button" disabled aria-label="Kirim pesan">➤</button>

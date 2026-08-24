@@ -356,3 +356,128 @@
     color: var(--japan-gold) !important;
     transform: scale(1.1);
 }
+
+/* =========================================
+   FITUR BALAS PESAN (REPLY)
+   ========================================= */
+
+/* Area Pratinjau di Atas Kolom Ketik */
+.reply-preview-area {
+    background: rgba(19, 25, 33, 0.98);
+    border-top: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--japan-gold);
+    padding: 8px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    z-index: 10;
+}
+
+.reply-preview-content { 
+    flex: 1; 
+    overflow: hidden; 
+}
+
+.reply-preview-content strong { 
+    color: var(--japan-gold); 
+    display: block; 
+    margin-bottom: 3px; 
+    font-size: 11px; 
+}
+
+.reply-preview-content p { 
+    color: var(--muted); 
+    margin: 0; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    font-size: 11px; 
+}
+
+.cancel-reply-btn { 
+    background: transparent; 
+    border: none; 
+    color: var(--muted); 
+    font-size: 20px; 
+    cursor: pointer; 
+    padding: 0 10px; 
+}
+
+.cancel-reply-btn:hover { 
+    color: var(--japan-red); 
+}
+
+/* Tampilan Kutipan Balasan di Dalam Gelembung Chat */
+.msg-reply-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--japan-gold);
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.msg-reply-box strong { 
+    color: var(--japan-gold); 
+    display: block; 
+    margin-bottom: 2px; 
+}
+
+.msg-reply-box p { 
+    color: rgba(255, 255, 255, 0.7); 
+    margin: 0; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+/* Transisi Halus Saat Pesan Digeser (Swipe) */
+.msg { 
+    transition: transform 0.2s ease-out; 
+}
+
+/* =========================================
+   INDIKATOR SEDANG MENGETIK (TYPING...)
+   ========================================= */
+.typing-indicator-container {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: transparent;
+    color: var(--japan-gold);
+    font-size: 11px;
+    font-weight: 600;
+    font-style: italic;
+    animation: fadeInTyping 0.3s ease-out;
+}
+
+@keyframes fadeInTyping {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.typing-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-dots span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background-color: var(--japan-gold);
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+.typing-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
