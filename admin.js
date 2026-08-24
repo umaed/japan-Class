@@ -253,6 +253,30 @@ const clearCoreBtn = document.getElementById("clearCoreBtn");
 
 if (currentUser === "Umaedi" && adminToggleBtn) adminToggleBtn.style.display = "block"; 
 
+// Layar Pengunci Khusus Admin (Mencegah admin kabur saat proses pembersihan berlangsung)
+function showAdminWipeOverlay() {
+    const overlay = document.createElement("div");
+    overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:monospace; text-align:center; padding:20px; backdrop-filter:blur(10px);";
+    overlay.innerHTML = `
+        <div style="font-size:50px; margin-bottom:20px;">⚠️</div>
+        <h2 style="color:#ff3b30; margin:0 0 10px; font-size:1.5rem;">SYSTEM OVERRIDE IN PROGRESS</h2>
+        <p style="color:#E2E8F0; margin-bottom:20px;">Menyusup ke database dan memusnahkan riwayat obrolan...</p>
+        <h1 id="adminCountdown" style="font-size:5rem; margin:0; color:#D4AF37;">10</h1>
+        <p style="color:#ff3b30; margin-top:30px; font-weight:bold; max-width:80%; line-height:1.5;">MOHON JANGAN TUTUP ATAU PINDAH HALAMAN INI SELAMA PROSES BERLANGSUNG!</p>
+    `;
+    document.body.appendChild(overlay);
+
+    let c = 10;
+    const cInt = setInterval(() => {
+        c--;
+        const counter = document.getElementById("adminCountdown");
+        if(counter) counter.innerText = c;
+        if(c <= 0) clearInterval(cInt);
+    }, 1000);
+
+    return overlay;
+}
+
 if (adminToggleBtn && adminModal) {
     adminToggleBtn.addEventListener("click", () => adminModal.style.display = "flex");
     closeAdminModal.addEventListener("click", () => adminModal.style.display = "none");
@@ -270,24 +294,31 @@ if (adminToggleBtn && adminModal) {
     // PEMICU BOT PEMBERSIH PUBLIC LOUNGE
     if (clearPublicBtn) {
         clearPublicBtn.addEventListener("click", () => {
-            if (confirm("YAKIN HAPUS PUBLIC LOUNGE? Bot akan memulai hitung mundur 10 detik di layar member.")) {
+            if (confirm("YAKIN HAPUS PUBLIC LOUNGE? Bot akan menyusup dan memulai hitung mundur 10 detik di layar semua orang.")) {
                 adminModal.style.display = "none";
                 const dbRef = ref(db, "messages_public");
                 
-                push(dbRef, { name: "SYSTEM", message: "Peringatan! Ruang obrolan ini akan dihapus secara permanen dalam hitung mundur", isCountdown: true, timestamp: Date.now() });
+                const overlay = showAdminWipeOverlay(); // Kunci Layar Umaedi
                 
-                // Jeda 10 detik, Hapus Node Utama, Beri Jeda 1 detik agar layar bersih dulu, baru kirim Notif Selesai.
+                // Memicu Bot Hacker Masuk
+                push(dbRef, { 
+                    name: "SYSTEM", 
+                    message: "Pesan di ruang obrolan ini akan dihapus oleh admin dalam hitung mundur", 
+                    isCountdown: true, 
+                    timestamp: Date.now() 
+                });
+                
+                // Eksekutor Penghapus Database (Jeda 10.5 Detik agar pas)
                 setTimeout(async () => {
-                    await remove(dbRef);
-                    setTimeout(() => {
-                        push(dbRef, {
-                            name: "SYSTEM",
-                            message: "Ruang obrolan ini telah berhasil dibersihkan dan direset oleh Admin.",
-                            isPostClear: true,
-                            timestamp: Date.now()
-                        });
-                    }, 1000);
-                }, 10000);
+                    await remove(dbRef); // Membakar habis database
+                    await push(dbRef, {
+                        name: "SYSTEM",
+                        message: "Ruang obrolan telah dibersihkan secara permanen oleh Admin.",
+                        isPostClear: true,
+                        timestamp: Date.now()
+                    });
+                    if(document.body.contains(overlay)) document.body.removeChild(overlay);
+                }, 10500);
             }
         });
     }
@@ -295,28 +326,35 @@ if (adminToggleBtn && adminModal) {
     // PEMICU BOT PEMBERSIH TRINITY CORE
     if (clearCoreBtn) {
         clearCoreBtn.addEventListener("click", () => {
-            if (confirm("YAKIN HAPUS TRINITY CORE? Bot akan memulai hitung mundur 10 detik.")) {
+            if (confirm("YAKIN HAPUS TRINITY CORE? Bot akan menyusup dan memulai hitung mundur 10 detik.")) {
                 adminModal.style.display = "none";
                 const dbRef = ref(db, "messages");
 
-                push(dbRef, { name: "SYSTEM", message: "Peringatan! Ruang obrolan ini akan dihapus secara permanen dalam hitung mundur", isCountdown: true, timestamp: Date.now() });
+                const overlay = showAdminWipeOverlay();
+
+                push(dbRef, { 
+                    name: "SYSTEM", 
+                    message: "Pesan di ruang obrolan ini akan dihapus oleh admin dalam hitung mundur", 
+                    isCountdown: true, 
+                    timestamp: Date.now() 
+                });
 
                 setTimeout(async () => {
                     await remove(dbRef);
-                    setTimeout(() => {
-                        push(dbRef, {
-                            name: "SYSTEM",
-                            message: "Ruang rahasia Trinity Core telah aman dan dibersihkan dari jejak.",
-                            isPostClear: true,
-                            timestamp: Date.now()
-                        });
-                    }, 1000);
-                }, 10000);
+                    await push(dbRef, {
+                        name: "SYSTEM",
+                        message: "Ruang rahasia Trinity Core telah aman dan dibersihkan dari jejak.",
+                        isPostClear: true,
+                        timestamp: Date.now()
+                    });
+                    if(document.body.contains(overlay)) document.body.removeChild(overlay);
+                }, 10500);
             }
         });
     }
 }
 
+// Global Pop-Up Alert Broadcast
 const globalAlert = document.getElementById("globalAlert");
 const alertTitle = document.getElementById("alertTitle");
 const alertMessage = document.getElementById("alertMessage");

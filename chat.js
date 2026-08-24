@@ -25,7 +25,6 @@ const isCore = currentUser && coreMembers.includes(currentUser.toLowerCase());
 
 let currentRoom = null; 
 let activeChatListener = null;
-let activeWipeListener = null; // SENSOR SAPU JAGAT
 let sessionLastRead = Date.now();
 let unreadDividerAdded = false;
 const pendingMessages = [];
@@ -157,24 +156,12 @@ window.openRoom = function(type) {
     localStorage.setItem("lastRead_" + type, Date.now());
 
     if (activeChatListener) activeChatListener(); 
-    if (activeWipeListener) activeWipeListener(); 
 
-    // Aliran Teks Real-Time
     activeChatListener = onChildAdded(ref(db, dbRefName), (snapshot) => {
         const data = snapshot.val();
         const msgKey = snapshot.key; 
         pendingMessages.push({ data, key: msgKey });
         renderMessage(data, msgKey);
-    });
-
-    // PENDETEKSI PEMUSNAHAN MUTLAK (Sapu Jagat Layar)
-    activeWipeListener = onValue(ref(db, dbRefName), (snapshot) => {
-        // Jika snapshot kosong (dihapus oleh admin.js)
-        if (!snapshot.exists()) {
-            if (chatBox) chatBox.replaceChildren();
-            pendingMessages.length = 0;
-            unreadDividerAdded = false;
-        }
     });
 };
 
@@ -191,7 +178,6 @@ if (isCore) {
             chatRoomView.style.display = "none";
             chatListView.style.display = "flex";
             if (activeChatListener) { activeChatListener(); activeChatListener = null; }
-            if (activeWipeListener) { activeWipeListener(); activeWipeListener = null; }
         });
     }
 } else {
@@ -263,48 +249,63 @@ function renderMessage(data, msgKey) {
     // 1. SISTEM PESAN BOT (HACKER) & HANGUS OTOMATIS
     // ==========================================
     if (senderName === "SYSTEM") {
-        if (data.isPostClear && localStorage.getItem("hidden_sys_" + msgKey)) return;
+        
+        // JIKA INI PESAN POST-CLEAR (BOT SELESAI)
+        if (data.isPostClear) {
+            
+            // JURUS SAPU JAGAT: Bersihkan semua elemen obrolan & foto di layar seketika!
+            if (chatBox) chatBox.replaceChildren();
+            pendingMessages.length = 0;
+            unreadDividerAdded = false;
 
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `msg is-other`; 
-        
-        const headerDiv = document.createElement("div");
-        headerDiv.className = "msg-header";
-        
-        const avatar = document.createElement("div");
-        avatar.className = "message-avatar";
-        
-        const sender = document.createElement("strong");
-        sender.textContent = "SYSTEM";
-        const badge = document.createElement("span");
-        badge.className = "tag-founder"; 
+            // Jika peringatan ini sudah pernah hangus di HP user, abaikan.
+            if (localStorage.getItem("hidden_sys_" + msgKey)) return;
 
-        // A. JIKA INI PESAN COUNTDOWN INTRUDER (Bot Hapus)
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `msg is-other`; 
+            msgDiv.innerHTML = `
+                <div class="msg-header">
+                    <div class="message-avatar" style="background:#131921; border: 1px solid #4CAF50; display:grid; place-items:center;">
+                        <span style="font-size:12px; color:#4CAF50;">🤖</span>
+                    </div>
+                    <strong>SYSTEM <span class="tag-core" style="background:#4CAF50; color:#fff; border-color:#4CAF50;">✅ SELESAI</span></strong>
+                </div>
+                <div class="msg-content">
+                    <span>${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span></span>
+                </div>
+            `;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Tandai sudah dibaca & set timer 60 detik untuk MENGUAPKAN pesannya
+            localStorage.setItem("hidden_sys_" + msgKey, "true");
+            setTimeout(() => {
+                msgDiv.style.transition = "opacity 1.5s ease, transform 1.5s ease";
+                msgDiv.style.opacity = "0";
+                msgDiv.style.transform = "scale(0.9)";
+                setTimeout(() => { if (msgDiv.parentNode) msgDiv.remove(); }, 1500);
+            }, 60000); 
+            return;
+        }
+
+        // JIKA INI PESAN COUNTDOWN INTRUDER (BOT HAPUS)
         if (data.isCountdown) {
             let timeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
-            if (timeLeft < 0) return; // Jika telat masuk, abaikan saja (nanti layar kehapus otomatis via onValue).
+            if (timeLeft <= 0) return; // Jika telat masuk, abaikan saja karena layar bakal disapu isPostClear
 
-            avatar.style.background = "#000"; 
-            avatar.style.border = "1px solid #00f3ff";
-            avatar.innerHTML = `<span style="font-size:14px;">👾</span>`; 
-            
-            badge.style.background = "#000";
-            badge.style.color = "#00f3ff";
-            badge.style.borderColor = "#00f3ff";
-            badge.innerText = "⚠️ INTRUDER BOT"; 
-            sender.appendChild(badge);
-            
-            headerDiv.append(avatar, sender);
-            
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "msg-content";
-            const textSpan = document.createElement("span");
-            textSpan.id = `countdownText_${msgKey}`;
-            textSpan.style.fontFamily = "monospace"; // Biar fontnya gaya hacker
-            textSpan.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:16px;">${timeLeft} detik</strong>.`;
-            contentDiv.appendChild(textSpan);
-
-            msgDiv.append(headerDiv, contentDiv);
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `msg is-other`; 
+            msgDiv.innerHTML = `
+                <div class="msg-header">
+                    <div class="message-avatar" style="background:#000; border: 1px solid #00f3ff; display:grid; place-items:center;">
+                        <span style="font-size:12px;">👾</span>
+                    </div>
+                    <strong>SYSTEM <span class="tag-founder" style="background:#000; color:#00f3ff; border-color:#00f3ff;">⚠️ ADMIN BOT</span></strong>
+                </div>
+                <div class="msg-content">
+                    <span id="countdownText_${msgKey}" style="font-family:monospace;"><em>${data.message}</em> <strong style="color:#ff3b30; font-size:14px;">${timeLeft} detik</strong>.</span>
+                </div>
+            `;
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -313,48 +314,12 @@ function renderMessage(data, msgKey) {
                     let newTimeLeft = 10 - Math.floor((Date.now() - data.timestamp) / 1000);
                     if (newTimeLeft > 0) {
                         const el = document.getElementById(`countdownText_${msgKey}`);
-                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:16px;">${newTimeLeft} detik</strong>.`;
+                        if(el) el.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:14px;">${newTimeLeft} detik</strong>.`;
                     } else {
                         clearInterval(timer);
                     }
                 }, 1000);
             }
-            return;
-        }
-
-        // B. JIKA INI PESAN POST-CLEAR (Bot Selesai & Menghilang)
-        if (data.isPostClear) {
-            avatar.style.background = "#131921"; 
-            avatar.innerHTML = `<span style="font-size:14px; color:#4CAF50;">🤖</span>`; 
-
-            badge.className = "tag-core"; 
-            badge.style.background = "#4CAF50";
-            badge.style.color = "#fff";
-            badge.style.borderColor = "#4CAF50";
-            badge.innerText = "✅ SELESAI"; 
-            sender.appendChild(badge);
-            
-            headerDiv.append(avatar, sender);
-
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "msg-content";
-            const message = document.createElement("span");
-            message.innerHTML = `${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span>`;
-            contentDiv.appendChild(message);
-
-            msgDiv.append(headerDiv, contentDiv);
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Timer Rahasia: Hangus 60 Detik SETELAH MEREKA BUKA & BACA CHAT INI
-            localStorage.setItem("hidden_sys_" + msgKey, "true"); // Tandai sudah terbaca
-            
-            setTimeout(() => {
-                msgDiv.style.transition = "opacity 1.5s ease, transform 1.5s ease";
-                msgDiv.style.opacity = "0";
-                msgDiv.style.transform = "scale(0.9)";
-                setTimeout(() => { if (msgDiv.parentNode) msgDiv.remove(); }, 1500);
-            }, 60000); 
             return;
         }
     }
