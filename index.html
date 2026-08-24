@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon & Meta Tags -->
+    <link rel="icon" type="image/png" href="gambar/icon.png">
+    <meta property="og:title" content="Nihongo Trinity | System Hub">
+    <meta property="og:description" content="Ruang belajar terstruktur untuk menguasai Hiragana, Katakana, dan jejepangan dengan disiplin.">
+    <meta property="og:image" content="https://nihongo-trinity.vercel.app/gambar/icon.png">
+    <meta property="og:url" content="https://nihongo-trinity.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <title>Nihongo Trinity | System Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="main-page">
+
+    <!-- NAVBAR ATAS (TOP BAR) -->
+    <nav class="top-navbar">
+        <div class="nav-brand">
+            <img src="gambar/icon.png" alt="Trinity Logo" class="nav-logo-img" onerror="this.style.display='none'">
+            <span class="nav-title">TRINITY</span>
+        </div>
+        <button id="topLoginToggle" class="top-login-toggle" aria-label="Profil Member">
+            <img id="topAvatar" src="gambar/icon.png" alt="Avatar" style="display: none; width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--japan-gold);">
+            <span class="icon" id="topIcon">👤</span> 
+            <span id="topLoginText">Login</span>
+        </button>
+    </nav>
+
+    <!-- MODAL PENGATURAN PROFIL -->
+    <div id="profileModalOverlay" class="global-login-overlay" style="display: none; z-index: 10002;">
+        <div class="login-modal" style="text-align: center; max-width: 350px;">
+            <span id="closeProfileModal" class="close-modal">×</span>
+            <h2 style="margin-bottom: 25px; font-size: 1.5rem; color: #fff; font-family: 'Noto Serif JP', serif;">Pengaturan Profil</h2>
+            
+            <div style="position: relative; width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%; border: 3px solid var(--japan-gold); overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+                <img id="profilePreviewImg" src="https://via.placeholder.com/110" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                <label for="profileImageUpload" style="position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; padding: 6px 0; cursor: pointer; text-align: center; font-weight: 600; font-family: 'Montserrat', sans-serif; transition: 0.3s;">UBAH FOTO</label>
+                <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="font-size: 11px; color: var(--japan-gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: block;">Nama Tampilan</label>
+                <input type="text" id="profileNameInput" placeholder="Ketik nama baru...">
+            </div>
+            
+            <button type="button" id="saveProfileBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 10px; padding: 14px;">SIMPAN PERUBAHAN</button>
+            <button type="button" id="logoutBtn" class="btn btn-secondary" style="width: 100%; border-color: #8B9BB4; color: #8B9BB4; padding: 14px;">KELUAR AKUN</button>
+        </div>
+    </div>
+    
+    <!-- POPUP KECIL (Guest Prompt) -->
+    <div id="guestPromptPopup" class="guest-prompt-popup" style="display: none;">
+        <div class="prompt-content">
+            <span class="prompt-icon">🛡️</span>
+            <p>Jika Anda adalah <strong>Team / Member</strong>, silakan login untuk akses fitur penuh.</p>
+            <div class="prompt-buttons">
+                <button id="btnPromptNanti" class="btn-nanti">Nanti</button>
+                <button id="btnPromptLogin" class="btn-login">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY LOGIN GLOBAL -->
+    <div id="globalLoginOverlay" class="global-login-overlay" style="display: none;">
+        <div class="login-modal">
+            <span id="closeLoginModal" class="close-modal">×</span>
+            <div class="modal-icon">⛩️</div>
+            <h2 id="modalTitle" style="color: #fff; font-family: 'Noto Serif JP', serif; margin: 0 0 10px; font-size: 1.5rem;">Identifikasi Member</h2>
+            <p id="modalDesc" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Silakan masuk untuk mengakses pusat kontrol dan ruang obrolan Trinity.</p>
+            
+            <div id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Nama Akun / Username">
+                <input type="password" id="loginPassword" placeholder="Kata Sandi">
+                <p id="loginError" class="login-error"></p>
+                <button type="button" id="mainLoginBtn" class="btn btn-primary" style="width:100%; margin-bottom:10px;">MASUK</button>
+                <p style="font-size:12px; color:var(--muted); margin-top:20px;">Belum punya akun? <span id="showRegisterBtn" style="color:var(--japan-gold); cursor:pointer; font-weight:bold; transition:0.3s;">Buat Akun Baru</span></p>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <input type="text" id="regUsername" placeholder="Nama Tampilan (Contoh: Budi)">
+                <input type="email" id="regEmail" placeholder="Alamat Email">
+                <input type="password" id="regPassword" placeholder="Buat Kata Sandi">
+                <p id="regError" class="login-error"></p>
+                <button type="button" id="mainRegBtn" class="btn btn-outline" style="width:100%; border-color:var(--japan-gold); color:var(--japan-gold); margin-bottom:10px;">DAFTAR SEKARANG</button>
+                <p style="font-size:12px; color:var(--muted); margin-top:20px;">Sudah punya akun? <span id="showLoginBtn" style="color:var(--japan-red); cursor:pointer; font-weight:bold; transition:0.3s;">Login di sini</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bagian Utama: Pusat Kontrol -->
+    <header class="hub-header">
+        <p class="eyebrow">【 学びの道 · Path of Learning 】</p>
+        <h1>Bangun fondasi Jepangmu, satu kana setiap hari.</h1>
+        <p class="subtitle">Ruang belajar terstruktur untuk menguasai Hiragana, Katakana, dan refleks membaca dengan disiplin dan konsistensi.</p>
+        
+        <div class="action-buttons">
+            <a href="pages/belajar.html" class="btn btn-primary">Hiragana →</a>
+            <a href="pages/belajar-katakana.html" class="btn btn-primary">Katakana →</a>
+            <div style="flex-basis: 100%; height: 0;"></div>
+            <a href="pages/kuis.html" class="btn btn-outline" style="min-width: 280px; margin-top: 5px;">Uji Refleks →</a>
+        </div>
+    </header>
+
+    <!-- Layout Dashboard -->
+    <div class="dashboard-wrapper">
+        <section class="team-main">
+            <h2>Team Roster <span>( チーム )</span></h2>
+            <div class="card-container">
+                <div class="card owner-card"><span class="badge">OWNER / FOUNDER</span><h3>Umaedi</h3><p class="role">IT & Technology Specialist</p><p class="desc">Keahlian utama di bidang Ilmu Teknologi, pemrograman, dan pengembangan sistem.</p></div>
+                <div class="card"><h3>Iqbal</h3><p class="role">Japanese Sensei</p><p class="desc"><em>"Rapid language acquisition..."</em> Sang master bahasa Jepang di dalam tim.</p></div>
+                <div class="card"><h3>Rifki / Swing</h3><p class="role">History, Politics & Religion</p><p class="desc">Memiliki wawasan fundamental dan mendalam di bidang sejarah, politik, dan ilmu agama.</p></div>
+                <div class="card"><h3>Fasya</h3><p class="role">Kana Learner</p><p class="desc">Member tim yang aktif berlatih kana dan ikut menjaga suasana belajar tetap seru.</p></div>
+            </div>
+        </section>
+
+        <!-- BAGIAN RANKING -->
+        <aside class="leaderboard-panel">
+            <h2>Ranking <span>( 順位 )</span></h2>
+            <ol class="rank-list" id="leaderboardList">
+                <li style="text-align: center; justify-content: center; color: var(--muted);">Memuat data server...</li>
+            </ol>
+            <a href="pages/donasi.html" class="donation-widget">
+                <div class="donation-icon">🍵</div>
+                <div class="donation-info"><strong>Support Our Journey</strong><span>Berikan dukungan (Donasi)</span></div>
+                <div class="donation-arrow">→</div>
+            </a>
+        </aside>
+    </div>
+    
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item is-active" href="index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item" href="pages/hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <a class="main-bottom-item main-bottom-message" href="pages/pesan.html" aria-label="Buka pesan grup">
+            <span class="main-bottom-icon" style="position: relative;">
+                ✉
+                <span id="msgBadge" class="msg-badge" style="display: none;">0</span>
+            </span>
+            <span>Pesan</span>
+        </a>
+        <a class="main-bottom-item" href="pages/jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <a class="main-bottom-item" href="pages/info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
+
+    <!-- FITUR KHUSUS ADMIN (UMAEDI) & GLOBAL ALERT -->
+    <button id="adminToggleBtn" class="admin-toggle-btn" style="display: none;">⚙️ SYSTEM OVERRIDE</button>
+
+    <div id="adminModal" class="global-login-overlay" style="display: none; z-index: 10000;">
+        <div class="login-modal" style="border-color: var(--japan-red); max-height: 90vh; overflow-y: auto;">
+            <span id="closeAdminModal" class="close-modal">×</span>
+            <div class="modal-icon">⚠️</div>
+            <h2 style="color: var(--japan-red);">Admin Panel</h2>
+            <p>Kirim update atau pengumuman ke SEMUA pengunjung saat ini.</p>
+            <input type="text" id="announceTitle" placeholder="Judul (ex: UPDATE JADWAL / PENTING)">
+            <textarea id="announceMessage" rows="4" placeholder="Ketik isi pengumuman di sini..." style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(8,12,16,.8); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; font-family: 'Montserrat', sans-serif; resize: none;"></textarea>
+            <button type="button" id="sendAnnounceBtn" class="btn btn-primary" style="width: 100%;">BROADCAST SEKARANG</button>
+
+            <!-- FITUR BARU: DATABASE CONTROL -->
+            <hr style="border-color: var(--border-subtle); margin: 25px 0;">
+            <h3 style="color: var(--japan-red); font-size: 1.1rem; margin-bottom: 5px;">Database Control</h3>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5;">Bersihkan riwayat obrolan secara real-time untuk menghemat ruang penyimpanan server gratis.</p>
+            <button type="button" id="clearPublicBtn" class="btn btn-outline" style="width: 100%; margin-bottom: 10px; font-size: 11px;">🧹 BERSIHKAN PUBLIC LOUNGE</button>
+            <button type="button" id="clearCoreBtn" class="btn btn-outline" style="width: 100%; font-size: 11px; border-color: #D32F2F; color: #D32F2F;">🧹 BERSIHKAN TRINITY CORE</button>
+        </div>
+    </div>
+
+    <!-- Pop-Up Peringatan -->
+    <div id="globalAlert" class="global-alert" style="display: none;">
+        <div class="alert-glow"></div>
+        <div class="alert-content">
+            <div class="alert-header">
+                <div class="alert-icon-wrapper"><span class="alert-icon">⛩️</span></div>
+                <div class="alert-titles">
+                    <span class="alert-sender">System Broadcast // Dev: Umaedi</span>
+                    <strong id="alertTitle">PENGUMUMAN SISTEM</strong>
+                </div>
+                <span id="closeAlert" class="close-alert" title="Tutup">×</span>
+            </div>
+            <div class="alert-body"><p id="alertMessage">Pesan dari sistem...</p></div>
+        </div>
+        <div class="alert-progress"></div>
+    </div>
+    
+    <script type="module" src="admin.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Ruang Obrolan | Trinity</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/pesan.css">
+    <script>if (!localStorage.getItem("nihongoChatUser")) window.location.replace("../index.html");</script>
+</head>
+<body class="message-page">
+    <main class="message-layout">
+
+        <!-- ========================================== -->
+        <!-- 1. TAMPILAN DAFTAR OBROLAN (WHATSAPP STYLE) -->
+        <!-- ========================================== -->
+        <section id="chatListView" class="chat-list-panel">
+            <header class="chat-header">
+                <div>
+                    <p class="section-label">TRINITY COMMUNITY</p>
+                    <h1>Pesan & Obrolan</h1>
+                </div>
+                <a href="../index.html" class="chat-back" aria-label="Kembali ke dashboard">×</a>
+            </header>
+            
+            <div class="chat-list-container">
+                <!-- RUANGAN 1: TRINITY CORE (Hanya Muncul Untuk Founder) -->
+                <div id="roomCardCore" class="room-card" style="display: none;" onclick="openRoom('core')">
+                    <div class="room-avatar" style="background: #D32F2F;">🛡️</div>
+                    <div class="room-info">
+                        <div class="room-title-row">
+                            <h3>TRINITY CORE <span>(Private)</span></h3>
+                            <span class="room-time" id="timeCore"></span>
+                        </div>
+                        <div class="room-desc-row">
+                            <p id="lastMsgCore">Memuat obrolan...</p>
+                            <span id="badgeCore" class="room-badge" style="display: none;">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RUANGAN 2: PUBLIC LOUNGE (Semua Orang) -->
+                <div id="roomCardPublic" class="room-card" onclick="openRoom('public')">
+                    <div class="room-avatar" style="background: #1E88E5;">🌐</div>
+                    <div class="room-info">
+                        <div class="room-title-row">
+                            <h3>PUBLIC LOUNGE</h3>
+                            <span class="room-time" id="timePublic"></span>
+                        </div>
+                        <div class="room-desc-row">
+                            <p id="lastMsgPublic">Memuat obrolan...</p>
+                            <span id="badgePublic" class="room-badge" style="display: none;">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 2. TAMPILAN DALAM ROOM (Disembunyikan Awalnya) -->
+        <!-- ========================================== -->
+        <section id="chatRoomView" class="chat-panel group-chat" style="display: none;">
+            <header class="chat-header" style="padding-left: 5px;">
+                <!-- Tombol Kembali ke Daftar Chat -->
+                <button id="backToListBtn" class="chat-back-arrow" aria-label="Kembali">←</button>
+                <div class="chat-group-avatar" id="roomIcon">♧</div>
+                <div>
+                    <p class="section-label" id="roomLabel">TRINITY COMMUNITY</p>
+                    <h1 id="roomTitle">Ruang Obrolan</h1>
+                   <span><i class="online-dot"></i> <span id="onlineCountText">Mendeteksi jaringan...</span></span>
+                </div>
+            </header>
+            
+           <!-- DAFTAR MEMBER (Hanya muncul di Trinity Core) -->
+            <div id="coreMemberAvatarList" class="group-members" aria-label="Member grup">
+                <div class="member-avatar avatar-umaedi" style="overflow: hidden; background: #fff;"><img src="../gambar/umaedi.png" alt="U" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#D32F2F'; this.parentNode.innerHTML='U';"></div>
+                <div class="member-avatar avatar-iqbal" style="overflow: hidden; background: #fff;"><img src="../gambar/iqbal.png" alt="I" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#D4AF37'; this.parentNode.innerHTML='I';"></div>
+                <div class="member-avatar avatar-rifki" style="overflow: hidden; background: #fff;"><img src="../gambar/rifki.png" alt="R" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#1E88E5'; this.parentNode.innerHTML='R';"></div>
+                <div class="member-avatar avatar-fasya" style="overflow: hidden; background: #fff;"><img src="../gambar/fasya.png" alt="F" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.style.background='#8e44ad'; this.parentNode.innerHTML='F';"></div>
+                <span class="member-count">Umaedi, Iqbal, Rifki, Fasya</span>
+            </div>
+            
+            <div class="chat-box" id="chatBox">
+                <div class="chat-day">HARI INI</div>
+            </div>
+            
+            <div class="chat-input-area">
+                <button class="chat-emoji" type="button" aria-label="Pilih emoji">☺</button>
+                
+                <!-- FITUR KIRIM GAMBAR (Khusus Core) -->
+                <input type="file" id="chatImageUpload" accept="image/*" style="display: none;">
+                <button id="sendImageBtn" type="button" style="display: none; background: transparent; color: #8B9BB4; font-size: 20px; border: none; cursor: pointer; padding: 0 5px; transition: 0.3s;" aria-label="Kirim Gambar">📷</button>
+                
+                <input type="text" id="chatInput" placeholder="Tulis pesan ke grup..." disabled>
+                <button id="sendBtn" type="button" disabled aria-label="Kirim pesan">➤</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../script.js"></script>
+    <script type="module" src="../admin.js"></script>
+    <script type="module" src="../chat.js"></script>
+</body>
+</html>

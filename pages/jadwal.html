@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihongo Trinity | Jadwal</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/jadwal.css">
+</head>
+<body class="main-page">
+    
+    <section class="content page-content jadwal-page">
+        <!-- Tombol Kembali -->
+        <a href="../index.html" class="back-btn">
+            <span class="back-icon">←</span> Dashboard
+        </a>
+
+        <p class="eyebrow">【 スケジュール · Jadwal Pertemuan 】</p>
+        <h1 class="page-title">Jadwal & Lokasi Kumpul</h1>
+        <p class="subtitle">Waktu khusus untuk berkumpul, belajar, dan berdiskusi bersama tim Nihongo Trinity.</p>
+
+        <!-- Lokasi Kumpul (Banner) -->
+        <div class="location-banner">
+            <div class="location-icon">📍</div>
+            <div class="location-text">
+                <span class="location-label">Lokasi Pertemuan (Basecamp)</span>
+                <h3>Rumah Umaedi (Owner / Developer)</h3>
+            </div>
+        </div>
+
+        <!-- Grid Jadwal -->
+        <div class="schedule-grid">
+            <!-- Malam Sabtu -->
+            <div class="schedule-card">
+                <div class="schedule-day">Jumat Malam</div>
+                <h3 class="schedule-title">Malam Sabtu</h3>
+                <p class="schedule-desc">Sesi kumpul malam pembuka untuk evaluasi dan diskusi santai.</p>
+            </div>
+            
+            <!-- Hari Sabtu -->
+            <div class="schedule-card">
+                <div class="schedule-day">Sabtu Siang/Sore</div>
+                <h3 class="schedule-title">Hari Sabtu</h3>
+                <p class="schedule-desc">Fokus belajar materi bersama dan pemantapan hafalan Kana.</p>
+            </div>
+
+            <!-- Malam Minggu (Highlight) -->
+            <div class="schedule-card active-night">
+                <div class="schedule-day">Sabtu Malam</div>
+                <h3 class="schedule-title">Malam Minggu</h3>
+                <p class="schedule-desc">Sesi kumpul utama. Waktu untuk latihan ekstra, tes refleks, dan review bersama tim.</p>
+            </div>
+
+            <!-- Hari Minggu -->
+            <div class="schedule-card">
+                <div class="schedule-day">Minggu Pagi/Siang</div>
+                <h3 class="schedule-title">Hari Minggu</h3>
+                <p class="schedule-desc">Sesi belajar tambahan dan persiapan materi untuk minggu depan.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item" href="../index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item" href="hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <a class="main-bottom-item main-bottom-message" href="pesan.html" aria-label="Buka pesan grup">
+            <span class="main-bottom-icon" style="position: relative;">
+                ✉
+                <!-- Balon Notifikasi -->
+                <span id="msgBadge" class="msg-badge" style="display: none;">0</span>
+            </span>
+            <span>Pesan</span>
+        </a>
+        <!-- Kelas is-active ada di menu Jadwal -->
+        <a class="main-bottom-item is-active" href="jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <a class="main-bottom-item" href="info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
+
+    <!-- Script pemanggil logika notif & Firebase -->
+    <script type="module" src="../admin.js"></script>
+    <script src="../script.js"></script>
+</body>
+</html>

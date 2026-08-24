@@ -1,0 +1,190 @@
+/* =========================================
+   Quiz / Training Page - Zen/Corporate Theme
+   ========================================= */
+.quiz-section { max-width: 900px; margin: 0 auto; padding: 40px 20px 100px; text-align: center; }
+.quiz-section .page-title { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); margin: 12px 0 8px; font-weight: 700; font-family: 'Noto Serif JP', serif; text-align: center; }
+.quiz-section .study-intro { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin: 0 auto 30px; font-weight: 300; max-width: 550px; text-align: center; }
+
+/* Papan Skor */
+.score-board {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+}
+
+.score-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 20px;
+    border-radius: 8px;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.highlight-score {
+    border-color: var(--japan-gold);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.score-label { color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.score-value { color: #fff; font-size: 1.5rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+.highlight-score .score-value { color: var(--japan-gold); }
+
+/* Kotak Kuis (Dojo) */
+.quiz-box {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 50px 30px 40px;
+    max-width: 550px;
+    margin: 0 auto;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.quiz-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--japan-red);
+}
+
+/* Tampilan Huruf Jepang */
+.kana-display {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 15px;
+    display: grid;
+    place-items: center;
+    background: var(--card-bg);
+    border: 2px dashed rgba(255,255,255,0.15);
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.quiz-box h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 80px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 500;
+    line-height: 1;
+}
+
+/* Label Tipe (Hiragana/Katakana) */
+.kana-type-label {
+    color: var(--japan-gold) !important;
+    font-size: 12px !important;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 30px !important;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Area Input & Tombol Jawab */
+.input-area {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.quiz-box input {
+    width: 100%;
+    height: 55px;
+    padding: 0 20px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    color: #fff !important;
+    background: rgba(11, 15, 20, 0.7);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: 0.3s;
+    -webkit-text-fill-color: #fff !important;
+}
+
+.quiz-box input:focus {
+    outline: none;
+    border-color: var(--japan-red);
+    box-shadow: 0 0 15px rgba(211, 47, 47, 0.2);
+}
+
+.quiz-box .btn {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+    letter-spacing: 2px;
+}
+
+/* Pesan Benar / Salah */
+#feedback {
+    min-height: 25px;
+    margin-top: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Tombol Kembali */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    padding: 8px 15px;
+    background: rgba(19, 25, 33, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    /* Penempatan Khusus Kuis */
+    position: absolute;
+    top: 25px;
+    left: 25px;
+}
+
+.back-btn:hover {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+.back-btn:hover .back-icon { transform: translateX(-4px); }
+.back-btn .back-icon { font-size: 16px; transition: transform 0.3s ease; }
+
+/* Responsif HP */
+@media (max-width: 600px) {
+    .quiz-section { padding: 80px 15px 110px; } /* Jarak atas ditambah karena back-btn */
+    .back-btn { top: 20px; left: 15px; }
+    
+    .score-board { gap: 10px; }
+    .score-item { min-width: 100px; padding: 10px; }
+    .score-value { font-size: 1.2rem; }
+    
+    .quiz-box { padding: 40px 20px 30px; }
+    .kana-display { width: 120px; height: 120px; }
+    .quiz-box h1 { font-size: 60px; }
+    .input-area { max-width: 100%; }
+}

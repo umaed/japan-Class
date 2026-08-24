@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nihongo Trinity | Donasi</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/donasi.css">
+</head>
+<body class="main-page">
+    
+    <section class="content page-content donasi-page">
+        <!-- Tombol Kembali -->
+        <a href="../index.html" class="back-btn">
+            <span class="back-icon">←</span> Dashboard
+        </a>
+
+        <p class="eyebrow">【 サポート · Support Us 】</p>
+        <h1 class="page-title">Dukung Perjalanan Kami</h1>
+        <p class="subtitle">Terima kasih atas apresiasi dan dukunganmu. Kontribusimu sangat berarti untuk pemeliharaan dan pengembangan sistem Nihongo Trinity.</p>
+
+        <!-- KARTU QRIS -->
+        <div class="qris-container">
+            <div class="qris-card">
+                <div class="qris-header">
+                    <h3>Scan QRIS</h3>
+                    <p>Menerima dari semua aplikasi pembayaran</p>
+                </div>
+                <div class="qris-image-wrapper">
+                    <!-- Path gambar QRIS kamu -->
+                    <img src="../gambar/qris.png" alt="QRIS Nihongo Trinity" onerror="this.src='https://via.placeholder.com/250?text=QRIS+Belum+Ada'">
+                </div>
+                <div class="qris-footer">
+                    <span>a.n. Umaedi Digital / Nihongo Trinity</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID METODE PEMBAYARAN -->
+        <div class="payment-grid">
+            
+            <!-- KOLOM 1: E-WALLET -->
+            <div class="payment-section">
+                <h3 class="section-title"><span class="icon">📱</span> E-Wallet</h3>
+                
+                <!-- Item DANA -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">DANA</strong>
+                        <span class="pay-number" id="danaNum">083818115136</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('083818115136', 'Nomor DANA')">Salin</button>
+                </div>
+
+                <!-- Item GoPay -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">GoPay</strong>
+                        <span class="pay-number" id="gopayNum">083818115136</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('083818115136', 'Nomor GoPay')">Salin</button>
+                </div>
+
+                <!-- Item OVO -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">OVO</strong>
+                        <span class="pay-number" id="ovoNum">083818115136</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('083818115136', 'Nomor OVO')">Salin</button>
+                </div>
+
+                <!-- Item ShopeePay -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">ShopeePay</strong>
+                        <span class="pay-number" id="spayNum">083818115136</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('083818115136', 'Nomor ShopeePay')">Salin</button>
+                </div>
+            </div>
+
+            <!-- KOLOM 2: TRANSFER BANK -->
+            <div class="payment-section">
+                <h3 class="section-title"><span class="icon">🏦</span> Transfer Bank</h3>
+                
+                <!-- Item SeaBank -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">SeaBank</strong>
+                        <span class="pay-number" id="seaNum">9015-6721-6652</span>
+                        <span class="pay-owner">a.n. UMAEDI</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('901567216652', 'Rekening SeaBank')">Salin</button>
+                </div>
+
+                <!-- Item Bank Jago -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">Bank Jago</strong>
+                        <span class="pay-number" id="jagoNum">5001-8084-0414</span>
+                        <span class="pay-owner">a.n. UMAEDI</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('500180840414', 'Rekening Bank Jago')">Salin</button>
+                </div>
+
+                <!-- Item Bank Krom -->
+                <div class="payment-item">
+                    <div class="pay-info">
+                        <strong class="pay-name">Krom Bank</strong>
+                        <span class="pay-number" id="kromNum">7700-0670-2008</span>
+                        <span class="pay-owner">a.n. UMAEDI</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('770006702008', 'Rekening Krom Bank')">Salin</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TOAST NOTIFICATION (Muncul saat tombol salin diklik) -->
+    <div id="copyToast" class="copy-toast">✅ Berhasil disalin!</div>
+
+    <!-- SCRIPT KHUSUS FITUR SALIN (COPY) -->
+    <script>
+        function copyToClipboard(text, name) {
+            // Membuat elemen sementara untuk menyalin teks (kompatibel untuk HP)
+            const tempInput = document.createElement("input");
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); /* Untuk perangkat mobile */
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            // Memunculkan Notifikasi Toast
+            const toast = document.getElementById("copyToast");
+            toast.innerText = `✅ ${name} berhasil disalin!`;
+            toast.classList.add("show-toast");
+
+            // Menghilangkan Notifikasi setelah 3 detik
+            setTimeout(() => {
+                toast.classList.remove("show-toast");
+            }, 3000);
+        }
+    </script>
+
+    <script src="../script.js"></script>
+</body>
+</html>

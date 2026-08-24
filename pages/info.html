@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihongo Trinity | Info</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/info.css">
+</head>
+<body class="main-page">
+    
+    <section class="content page-content info-page">
+        <!-- Tombol Kembali -->
+        <a href="../index.html" class="back-btn">
+            <span class="back-icon">←</span> Dashboard
+        </a>
+
+        <p class="eyebrow">【 開発者情報 · Developer Info 】</p>
+        <h1 class="page-title">Info Sistem & Pengembang</h1>
+        <p class="subtitle">Kenali pengembang dan filosofi di balik hadirnya Nihongo Trinity sebagai ruang belajar kana yang terstruktur.</p>
+
+        <!-- Kartu Profil Developer -->
+        <button class="developer-profile" id="developerProfile" type="button" aria-expanded="false" aria-controls="developerMessage">
+            <div class="developer-avatar" aria-hidden="true">U</div>
+            <div class="developer-details">
+                <div class="developer-name-row">
+                    <div>
+                        <span class="section-label">Pembuat Sistem</span>
+                        <h2>Umaedi</h2>
+                    </div>
+                    <span class="active-status"><span class="active-dot"></span> AKTIF</span>
+                </div>
+                <span class="profile-hint">Klik untuk membaca pesan <span aria-hidden="true">↗</span></span>
+            </div>
+        </button>
+
+        <!-- Pesan Tersembunyi -->
+        <section class="info-message is-hidden" id="developerMessage" aria-hidden="true">
+            <span class="section-label">Pesan dari Developer</span>
+            <p>“Untuk sekarang pokoknya belajar bahasa Jepangnya cukup mudah. Tinggal kunjungi situs ini saja dan tidak perlu repot download APK dari Play Store.”</p>
+        </section>
+    </section>
+
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item" href="../index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item" href="hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <a class="main-bottom-item main-bottom-message" href="pesan.html" aria-label="Buka pesan grup">
+            <span class="main-bottom-icon" style="position: relative;">
+                ✉
+                <!-- Balon Notifikasi -->
+                <span id="msgBadge" class="msg-badge" style="display: none;">0</span>
+            </span>
+            <span>Pesan</span>
+        </a>
+        <a class="main-bottom-item" href="jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <!-- Kelas is-active ada di menu Info -->
+        <a class="main-bottom-item is-active" href="info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
+
+    <!-- Script pemanggil logika notif & Firebase -->
+    <script type="module" src="../admin.js"></script>
+    <script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nihongo Trinity | J-Pop & Music Tracks</title>
+    <!-- Memanggil CSS Global -->
+    <link rel="stylesheet" href="../../style.css">
+    <!-- Memanggil CSS Khusus Musik -->
+    <link rel="stylesheet" href="../../css/musik/musik.css">
+</head>
+<body class="main-page">
+    
+    <section class="content musik-page">
+        <!-- Tombol Kembali -->
+        <a href="../hiburan.html" class="back-btn">
+            <span class="back-icon">←</span> Kembali ke Hiburan
+        </a>
+
+        <p class="eyebrow">【 音楽 · Japanese Music 】</p>
+        <h1 class="page-title">Music Tracks</h1>
+        <p class="subtitle">Alunan nada dari Negeri Sakura. Pilih *playlist* andalanmu untuk menemani waktu fokus atau saat bersantai.</p>
+
+        <!-- DAFTAR PLAYLIST MUSIK -->
+        <div class="music-list">
+            
+            <!-- Track 1: J-Pop Hits -->
+            <div class="music-card" onclick="alert('Memutar J-Pop Hits...')">
+                <div class="album-cover">
+                    <img src="https://via.placeholder.com/150/111b21/D32F2F?text=J-POP" alt="J-Pop Cover">
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="music-info">
+                    <h3>J-Pop Essentials</h3>
+                    <p>YOASOBI, Kenshi Yonezu, Ado, LiSA</p>
+                </div>
+                <div class="music-action">
+                    <button class="icon-btn">♡</button>
+                    <span class="duration">01:45:00</span>
+                </div>
+            </div>
+
+            <!-- Track 2: City Pop Retro -->
+            <div class="music-card" onclick="alert('Memutar City Pop...')">
+                <div class="album-cover">
+                    <img src="https://via.placeholder.com/150/111b21/D4AF37?text=CITY+POP" alt="City Pop Cover">
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="music-info">
+                    <h3>Tokyo City Pop 80s</h3>
+                    <p>Miki Matsubara, Mariya Takeuchi, Tatsuro Yamashita</p>
+                </div>
+                <div class="music-action">
+                    <button class="icon-btn">♡</button>
+                    <span class="duration">02:10:00</span>
+                </div>
+            </div>
+
+            <!-- Track 3: J-Rock & Anime Openings -->
+            <div class="music-card" onclick="alert('Memutar J-Rock...')">
+                <div class="album-cover">
+                    <img src="https://via.placeholder.com/150/111b21/1E88E5?text=J-ROCK" alt="J-Rock Cover">
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="music-info">
+                    <h3>Anime Opening Anthems</h3>
+                    <p>ONE OK ROCK, RADWIMPS, Asian Kung-Fu Generation</p>
+                </div>
+                <div class="music-action">
+                    <button class="icon-btn">♡</button>
+                    <span class="duration">03:05:00</span>
+                </div>
+            </div>
+
+            <!-- Track 4: Lofi Chill/Cyberpunk -->
+            <div class="music-card" onclick="alert('Memutar Lofi Beats...')">
+                <div class="album-cover">
+                    <img src="https://via.placeholder.com/150/111b21/8e44ad?text=LOFI" alt="Lofi Cover">
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="music-info">
+                    <h3>Neo-Tokyo Lofi Beats</h3>
+                    <p>Instrumental chill untuk menemani coding dan belajar kana</p>
+                </div>
+                <div class="music-action">
+                    <button class="icon-btn">♡</button>
+                    <span class="duration">04:20:00</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Navigasi Bawah -->
+    <nav class="main-bottom-nav" aria-label="Navigasi utama">
+        <a class="main-bottom-item" href="../../index.html"><span class="main-bottom-icon">⌂</span><span>Home</span></a>
+        <a class="main-bottom-item is-active" href="../hiburan.html"><span class="main-bottom-icon">✦</span><span>Hiburan</span></a>
+        <a class="main-bottom-item main-bottom-message" href="../pesan.html" aria-label="Buka pesan grup">
+            <span class="main-bottom-icon" style="position: relative;">
+                ✉
+                <span id="msgBadge" class="msg-badge" style="display: none;">0</span>
+            </span>
+            <span>Pesan</span>
+        </a>
+        <a class="main-bottom-item" href="../jadwal.html"><span class="main-bottom-icon">◷</span><span>Jadwal</span></a>
+        <a class="main-bottom-item" href="../info.html"><span class="main-bottom-icon">ⓘ</span><span>Info</span></a>
+    </nav>
+
+    <script type="module" src="../../admin.js"></script>
+    <script src="../../script.js"></script>
+</body>
+</html>

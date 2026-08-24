@@ -1,0 +1,166 @@
+/* =========================================
+   Jadwal Page - Zen/Corporate Theme
+   ========================================= */
+.jadwal-page { max-width: 900px; margin: 0 auto; padding: 40px 20px 100px; }
+.jadwal-page .page-title { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); margin: 12px 0 8px; font-weight: 700; font-family: 'Noto Serif JP', serif; }
+.jadwal-page .subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 40px; font-weight: 300; }
+
+/* Banner Lokasi */
+.location-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, rgba(211, 47, 47, 0.1), rgba(19, 25, 33, 0.9));
+    border-left: 4px solid var(--japan-red);
+    border-radius: 8px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.location-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(211, 47, 47, 0.15);
+    border-color: var(--japan-gold);
+}
+
+.location-icon {
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    background: rgba(211, 47, 47, 0.15);
+    border-radius: 50%;
+    color: var(--japan-red);
+    border: 1px solid var(--japan-red);
+}
+
+.location-text { flex: 1; text-align: left; }
+.location-label { color: var(--japan-gold); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
+.location-text h3 { margin: 0; color: #fff; font-size: 1.3rem; font-family: 'Montserrat', sans-serif; }
+
+/* Grid Jadwal */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* Kartu Jadwal */
+.schedule-card {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    text-align: left;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.schedule-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--muted);
+    opacity: 0.3;
+    transition: 0.3s;
+}
+
+.schedule-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+
+.schedule-card:hover::before { opacity: 1; background: var(--japan-gold); }
+
+/* Highlight khusus Malam Minggu */
+.schedule-card.active-night::before { background: var(--japan-red); opacity: 1; }
+.schedule-card.active-night { border-color: rgba(211, 47, 47, 0.3); }
+
+/* Label Hari */
+.schedule-day {
+    display: inline-block;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-subtle);
+    transition: 0.3s;
+}
+
+.schedule-card:hover .schedule-day {
+    color: var(--japan-gold);
+    border-color: var(--japan-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.schedule-card.active-night .schedule-day {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+.schedule-title { margin: 0 0 10px 0; color: #fff; font-size: 1.4rem; font-family: 'Noto Serif JP', serif; }
+.schedule-desc { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.7; font-weight: 300; }
+
+/* Responsif Layar HP */
+@media (max-width: 600px) {
+    .jadwal-page { padding: 30px 15px 110px; }
+    .location-banner { flex-direction: column; text-align: center; gap: 15px; padding: 25px 15px; border-left: none; border-top: 4px solid var(--japan-red); }
+    .location-text { text-align: center; }
+    .schedule-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   Penyempurnaan Posisi & Tombol Kembali
+   ========================================= */
+
+/* Pastikan section memiliki posisi relatif dan padding bawah agar tidak tertutup nav */
+.info-page, .jadwal-page { 
+    position: relative; 
+    padding: 80px 20px 110px; /* Padding atas ditambahkan agar tombol tidak menabrak judul */
+    text-align: center;
+}
+
+/* Gaya Tombol Kembali yang tersembunyi sebelumnya */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 15px;
+    background: rgba(19, 25, 33, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 30px;
+    left: 20px;
+}
+
+.back-btn:hover {
+    color: var(--japan-red);
+    border-color: var(--japan-red);
+    background: rgba(211, 47, 47, 0.1);
+}
+
+.back-btn:hover .back-icon { 
+    transform: translateX(-4px); 
+}
