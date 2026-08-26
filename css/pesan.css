@@ -481,3 +481,34 @@
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1); }
 }
+
+/* =========================================
+   Waktu Pesan (Timestamp) & Pembagi Hari
+   ========================================= */
+.msg-time {
+    display: block;
+    font-size: 9px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 6px;
+    line-height: 1;
+    font-weight: 500;
+}
+
+.is-own .msg-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.chat-day {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--japan-gold);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 15px;
+    border-radius: 20px;
+    margin: 20px auto;
+    width: max-content;
+    letter-spacing: 1px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}

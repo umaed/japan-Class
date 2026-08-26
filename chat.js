@@ -29,6 +29,7 @@ let activeWipeListener = null;
 let activeTypingListener = null;
 let sessionLastRead = Date.now();
 let unreadDividerAdded = false;
+let lastRenderedDateString = ""; // Sensor Pelacak Hari
 const pendingMessages = [];
 let currentOnlineUsers = []; 
 
@@ -43,14 +44,13 @@ const chatRoomView = document.getElementById("chatRoomView");
 const backToListBtn = document.getElementById("backToListBtn");
 const chatImageUpload = document.getElementById("chatImageUpload");
 const sendImageBtn = document.getElementById("sendImageBtn");
-const recordAudioBtn = document.getElementById("recordAudioBtn"); // Tombol Voice Note
+const recordAudioBtn = document.getElementById("recordAudioBtn"); 
 
 const typingIndicatorContainer = document.createElement("div");
 typingIndicatorContainer.className = "typing-indicator-container";
 typingIndicatorContainer.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div><span id="typingUserNameText">Seseorang sedang mengetik...</span>`;
 let typingTimeout = null;
 
-// Tampilkan Fitur Eksklusif Jika Founder
 if (isCore) {
     if(sendImageBtn) sendImageBtn.style.display = "block"; 
     if(recordAudioBtn) recordAudioBtn.style.display = "block";
@@ -93,7 +93,7 @@ if (recordAudioBtn) {
                 };
                 
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // webm sangat ringan
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
                     const reader = new FileReader();
                     reader.onloadend = function() {
                         const base64Audio = reader.result;
@@ -106,26 +106,21 @@ if (recordAudioBtn) {
                         }
                     };
                     reader.readAsDataURL(audioBlob);
-                    
-                    // Matikan mic agar tidak bocor
                     stream.getTracks().forEach(track => track.stop());
                 };
                 
                 mediaRecorder.start();
                 isRecording = true;
-                recordAudioBtn.style.color = "#D32F2F"; // Berubah merah saat merekam
+                recordAudioBtn.style.color = "#D32F2F"; 
                 recordAudioBtn.style.animation = "pulseGlow 1s infinite";
                 if(chatInput) chatInput.placeholder = "Merekam suara... (Klik mic lagi untuk stop)";
             } catch (err) {
                 alert("Gagal mengakses mikrofon. Pastikan Anda memberi izin akses mic.");
             }
         } else {
-            // STOP Merekam
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-            }
+            if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
             isRecording = false;
-            recordAudioBtn.style.color = "#8B9BB4"; // Kembali abu-abu
+            recordAudioBtn.style.color = "#8B9BB4"; 
             recordAudioBtn.style.animation = "none";
             if(chatInput) chatInput.placeholder = "Tulis pesan ke grup...";
         }
@@ -193,7 +188,6 @@ function listenRoomPreview(roomType) {
             const badgeEl = document.getElementById(roomType === "core" ? "badgeCore" : "badgePublic");
 
             if (lastMsgData) {
-                // Modifikasi preview teks kalau ada VN
                 let msgText = lastMsgData.image ? "📷 Mengirim foto" : (lastMsgData.audio ? "🎤 Voice Note" : lastMsgData.message);
                 if (lastMsgData.isCountdown) msgText = "⚠️ Pembersihan sistem dimulai...";
                 if (lastMsgData.isPostClear) msgText = "✅ Ruang obrolan bersih.";
@@ -248,6 +242,7 @@ window.openRoom = function(type) {
     if (chatBox) chatBox.replaceChildren();
     pendingMessages.length = 0;
     unreadDividerAdded = false;
+    lastRenderedDateString = ""; // Reset sensor hari
 
     renderOnlineUsers();
 
@@ -271,6 +266,7 @@ window.openRoom = function(type) {
             if (chatBox) chatBox.replaceChildren();
             pendingMessages.length = 0;
             unreadDividerAdded = false;
+            lastRenderedDateString = "";
         }
     });
 
@@ -332,6 +328,7 @@ window.addEventListener('profilesUpdated', () => {
     if(chatBox && currentRoom) {
         chatBox.replaceChildren(); 
         unreadDividerAdded = false;
+        lastRenderedDateString = "";
         pendingMessages.forEach(item => renderMessage(item.data, item.key)); 
     }
     renderOnlineUsers(); 
@@ -379,10 +376,38 @@ function setLoginState(user) {
     }
 }
 
+// ==========================================
+// RENDER PESAN & GESTUR SWIPE
+// ==========================================
 function renderMessage(data, msgKey) {
     if (!currentUser || !chatBox || !currentRoom) return;
     const senderName = data.name || "Unknown";
+    
+    // --- 1. KALKULASI TANGGAL & WAKTU ---
+    const msgDate = new Date(data.timestamp || Date.now());
+    const timeString = String(msgDate.getHours()).padStart(2, '0') + ':' + String(msgDate.getMinutes()).padStart(2, '0');
+    
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    let displayDate = msgDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    if (msgDate.toDateString() === today.toDateString()) {
+        displayDate = "HARI INI";
+    } else if (msgDate.toDateString() === yesterday.toDateString()) {
+        displayDate = "KEMARIN";
+    }
 
+    // Tampilkan label tanggal jika hari berubah
+    if (displayDate !== lastRenderedDateString) {
+        const dayDivider = document.createElement("div");
+        dayDivider.className = "chat-day";
+        dayDivider.innerText = displayDate;
+        chatBox.appendChild(dayDivider);
+        lastRenderedDateString = displayDate;
+    }
+
+    // --- 2. LOGIKA PESAN SYSTEM ---
     if (senderName === "SYSTEM") {
         if (data.isPostClear && localStorage.getItem("hidden_sys_" + msgKey)) return;
         const msgDiv = document.createElement("div");
@@ -411,6 +436,12 @@ function renderMessage(data, msgKey) {
             textSpan.style.fontFamily = "monospace"; 
             textSpan.innerHTML = `<em>${data.message}</em> <strong style="color:#ff3b30; font-size:16px;">${timeLeft} detik</strong>.`;
             contentDiv.appendChild(textSpan);
+            
+            // Tambahkan Jam di Pesan Sistem
+            const timeEl = document.createElement("div");
+            timeEl.className = "msg-time"; timeEl.textContent = timeString;
+            contentDiv.appendChild(timeEl);
+
             msgDiv.append(headerDiv, contentDiv);
             chatBox.appendChild(msgDiv);
             
@@ -440,6 +471,10 @@ function renderMessage(data, msgKey) {
             const message = document.createElement("span");
             message.innerHTML = `${data.message}<br><br><span style="font-size:9px; color:var(--muted); font-weight:normal;">(Pesan sistem ini akan hangus dalam 60 detik)</span>`;
             contentDiv.appendChild(message);
+            
+            const timeEl = document.createElement("div");
+            timeEl.className = "msg-time"; timeEl.textContent = timeString;
+            contentDiv.appendChild(timeEl);
 
             msgDiv.append(headerDiv, contentDiv);
             chatBox.appendChild(msgDiv);
@@ -455,6 +490,7 @@ function renderMessage(data, msgKey) {
         }
     }
 
+    // --- 3. PESAN CHAT NORMAL ---
     if (!unreadDividerAdded && data.timestamp > sessionLastRead && senderName !== currentUser) {
         const divider = document.createElement("div");
         divider.className = "chat-day unread-divider";
@@ -493,6 +529,7 @@ function renderMessage(data, msgKey) {
     const contentDiv = document.createElement("div");
     contentDiv.className = "msg-content";
 
+    // A. KOTAK REPLY
     if (data.replyTo) {
         const replyDiv = document.createElement("div");
         replyDiv.className = "msg-reply-box";
@@ -500,12 +537,14 @@ function renderMessage(data, msgKey) {
         contentDiv.appendChild(replyDiv);
     }
     
+    // B. TEKS PESAN
     if (data.message) {
         const message = document.createElement("span");
         message.textContent = data.message;
         contentDiv.appendChild(message);
     }
 
+    // C. GAMBAR
     if (data.image) {
         const imgEl = document.createElement("img");
         imgEl.src = data.image;
@@ -523,7 +562,7 @@ function renderMessage(data, msgKey) {
         contentDiv.appendChild(imgEl);
     }
 
-    // RENDER AUDIO (Jika ada)
+    // D. AUDIO (VOICE NOTE)
     if (data.audio) {
         const audioEl = document.createElement("audio");
         audioEl.controls = true;
@@ -532,12 +571,15 @@ function renderMessage(data, msgKey) {
         audioEl.style.width = "220px";
         audioEl.style.height = "35px";
         audioEl.style.outline = "none";
-        
-        // Custom styling audio bawaan browser agar agak nyambung warnanya (Hack ringan)
         audioEl.style.filter = "sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%)";
-        
         contentDiv.appendChild(audioEl);
     }
+
+    // E. WAKTU PESAN (TIMESTAMP)
+    const timeEl = document.createElement("div");
+    timeEl.className = "msg-time";
+    timeEl.textContent = timeString;
+    contentDiv.appendChild(timeEl);
 
     msgDiv.append(headerDiv, contentDiv);
     chatBox.appendChild(msgDiv);
@@ -546,6 +588,7 @@ function renderMessage(data, msgKey) {
     chatBox.scrollTop = chatBox.scrollHeight;
     localStorage.setItem("lastRead_" + currentRoom, Date.now());
 
+    // --- LOGIKA GESTUR SWIPE ---
     let startX = 0; let startY = 0; let isSwiping = false;
 
     msgDiv.addEventListener('touchstart', (e) => {
